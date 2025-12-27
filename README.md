@@ -1,6 +1,6 @@
-# SellTools
+<h1 style="color:red">Engeza</h1>
 
-**SellTools** is a Django-based e-commerce platform designed to facilitate online product sales, featuring specific integrations for the Ethiopian market.
+**Engza** is a Django-based e-commerce platform designed to facilitate online product sales, featuring specific integrations for the Ethiopian market.
 
 ## Project Overview
 
