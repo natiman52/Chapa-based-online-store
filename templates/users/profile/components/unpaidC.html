@@ -1,0 +1,75 @@
+
+
+
+<div class="main-content">
+    {%block unpaid_block%}
+    <!-- Profile Header -->
+    <div id="unpaid-cont">
+
+        <div class="profile-header">
+            <img src="/media/{{request.user.img}}" alt="Profile Picture" class="profile-avatar">
+            <div class="profile-name">
+                {{request.user.phone}} <i class="fas fa-check-circle verified-badge"></i>
+            </div>
+            <div class="profile-email">{{request.user.email}}</div>
+        </div>
+        <div class="two-column">
+            <div>
+                <div class="section-card">
+                    <div class="section-title">Unpaid Bills</div>
+                    {% if items %}
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th scope="col">#</th>
+                                <th scope="col">Amount</th>
+                                <th scope="col">Date</th>
+                                <th scope="col">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for item in items %}
+                            <tr>
+                                <th scope="row">{{forloop.counter}}</th>
+                                <td>{{item.amount|floatformat:2}} ETB {{item.txt}}</td>
+                                <td>{{item.date}}</td>
+                                <td><a href="{{item.link}}" class="btn btn-primary btn-sm" target="_blank">Pay Now</a></td>
+                                <td>
+                                    <input type="hidden" value="{{item.id}}" name="delete">
+                                    <div hx-post="{%url 'unpaid-bills'%}" hx-include="[name='delete']" hx-target="#unpaid-cont" hx-swap="OuterHTML" hx-indicator="#unpaidspinner" style="cursor:pointer;" class="d-flex align-items-center text-danger">
+                                        <i class="bi bi-x-circle-fill"></i>
+                                    </div>
+                                    <div id="unpaidspinner" class="spinner-border spinner-border-sm text-primary ms-2" role="status" style="display:none;">
+                                        <span class="visually-hidden">Loading...</span>
+                                    </div>
+                                </td>
+                                
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                    {% else %}
+                    <p>No unpaid bills found.</p>
+                    {% endif %}
+                </div>
+                
+                <!-- Security Settings -->
+    
+            </div>
+            
+            <!-- Right Column -->
+            <div>
+                <div class="section-card">
+                    <div class="section-title">Account Details</div>
+                    
+                    <div class="info-row">
+                        <div class="info-label">Account Created:</div>
+                        <div class="info-value">{{request.user.created}}</div>
+    
+                </div>
+    </div>
+            </div>
+            </div>
+    </div>
+    </div>
+    {%endblock %}

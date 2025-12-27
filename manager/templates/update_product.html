@@ -1,0 +1,211 @@
+{%extends "Mcomponent/manager_base.html"%}
+{%block stuff%}
+<form x-ref="myform" x-data="{
+    error:[],
+    postsent:false,
+    home:'{{home}}',
+    images:[
+        {% for img in product.images.all %}
+        {url: '{{ img.img.url }}', id: {{ img.id }}, is_existing: true},
+        {% endfor %}
+    ],
+    ...createProducts,
+    items: {{ product.detail|length|default:1 }},
+    result: {{ product.detail|default:'[]'|safe }},
+    searchedcat:[],
+    selectedcat: {{ product_catagory }},
+    catagories: {{ catagories }},
+    
+    HandleUpdateEvent: function(event, url, token, form) {
+        event.preventDefault();
+        var formdata = new FormData(form);
+        const detail = JSON.stringify(this.result);
+        
+        // Handle images
+        formdata.delete('product_images');
+        
+        // 1. New images
+        let newImages = this.images.filter(i => !i.is_existing);
+        for (let i of newImages) {
+            if (i.file) {
+                formdata.append('product_images', i.file);
+            }
+        }
+        
+        // 2. Existing images to keep
+        let existingImageIds = this.images.filter(i => i.is_existing).map(i => i.id);
+        formdata.append('existing_images', JSON.stringify(existingImageIds));
+
+        // Categories
+        if (this.selectedcat.length > 0) {
+            formdata.delete('product_catagory');
+            for (let i of this.selectedcat) {
+                formdata.append('product_catagory', i.pk);
+            }
+        } else {
+            formdata.append('product_catagory', '');
+        }
+        
+        formdata.append('product_detail', detail);
+        
+        this.validateForm(formdata);
+        if (this.error.length > 0) {
+            return;
+        }
+        
+        this.postsent = true;
+        axios.post(url, formdata, {headers: {'X-CSRFToken': token}}).then(e => {
+            window.location.href = this.home;
+        }).catch(e => {
+            console.error(e);
+            alert('Something went wrong');
+            this.postsent = false;
+        })
+    }
+}" class="position-relative ">
+    <div x-show="postsent" class="position-fixed top-0 start-0 h-100 justify-content-center align-items-center w-100" style="background-color: rgba(255, 255, 255, 0.8); z-index: 1050; backdrop-filter: blur(5px); border-radius: 0.5rem;">
+        <div style="min-height: 95vh;" class="d-flex justify-content-center align-items-center flex-column">
+            <div class="spinner-border text-primary mb-3" style="width: 3rem; height: 3rem;" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+            <h5 class="text-dark fw-bold">Updating...</h5>
+            <p class="text-muted small">Please wait while we update the product.</p>
+        </div>
+    </div>
+    <div class="my-5 mt-3 mx-5">
+        <template x-for="x in error">
+            <p class="mb-2 ps-2 py-2 alert-danger text-danger" x-text="`Something is wrong with what you provided at ${x}`"></p>
+        </template>
+
+    <div class="border-bottom pb-2 mb-3 ">
+        <div class="d-flex align-items-end justify-content-between">
+            <div>
+                <p class="mb-0 fs-3 text-dark fw-bold">Update Product</p>
+                <p class="mb-0">Edit product details</p>
+            </div>
+            <button class="btn btn-success" @click="HandleUpdateEvent($event,'{%url 'update_product' product.id %}','{{csrf_token}}',$refs.myform)">Update</button>
+        </div>
+    </div>
+    <div>
+        <div style="column-gap: 3rem;" class="gap-3 h-100 d-flex flex-wrap">
+            <div style="flex: 1;">
+                <div class="mb-5">
+                <input x-ref="imgfile" @change="imageCollector($event)" style="visibility: hidden;" type="file" id="image" multiple>
+                    <div @drop="DropImage($event)" @dragenter="dragAndDrop($event)" @dragleave="dragAndDrop($event)" style="min-height:130px;" class="rounded bg-light position-relative ps-3 py-3 pe-2 ">
+                    <div class="d-flex flex-wrap gap-3">
+                        <template x-for="x in images">
+                            <div style="z-index: 100;" class="rounded border position-relative">
+                                <img style="width: 150px;height: 100px; object-fit: cover;" :src="x.url" alt="">
+                                <button @click="removeImage($event,x.url)" style="top:-15px;left:-15px;z-index: 1000;background-color: black;" class="d-flex justify-content-center position-absolute btn btn-square rounded-circle"><i class="fs-3 text-white">&times;</i></button>
+                            </div>
+                        </template>
+                        <template x-if="images.length < 5 && images.length > 0">
+                            <label for="image" style="width: 150px;" class="border rounded bg-white d-flex justify-content-center align-items-center">
+                                    <i style="cursor: pointer;" class="bg-dark p-2 rounded fa fa-plus text-white"></i>
+                            </label>
+                        </template>
+                    </div>
+                    <template x-if="images.length == 0">
+                        <div class="position-absolute top-50 start-50 translate-middle ">
+                            <p class="text-center mb-1 text-dark fs-5"><i class="bi bi-upload"></i></p>
+                            <span class="text-center fs-5 text-dark">
+                                <label for="image" class="link text-primary" style="cursor: pointer;">Click to upload</label> or drag and drop
+                            </span>
+                            <p class="text-center small">JPEG,PNG,JPEG, upto 5 images</p>
+                        </div>
+                    </template>
+                    
+                        <div id="create_product_overlay" style="display: none;" class="position-absolute w-100 h-100">
+
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-white shadow-sm rounded p-4">
+                    <h4 class="text-dark border-bottom pb-1">General Information</h4>
+                    <div class="mt-3 w-100">
+                        <label for="name" class="text-dark mb-2 fs-6">Product Name</label>
+                        <input type="text" name="product_name" id="name" class="ps-2 w-100 search-input" value="{{ product.name }}">
+                        <small>This is how people will see this product</small>
+                    </div>
+                    <div class="mt-4">
+                        <label class="text-dark mb-2 fs-6" for="">About</label>
+                        <textarea name="product_about" rows="7" class="w-100 ps-2 pt-2 h-100 search-input">{{ product.about }}</textarea>
+                        <small>Describe about the product in general</small>
+                    </div>
+                </div>
+            </div>
+            <div style="flex: 1;">
+                <div class="bg-white shadow-sm rounded p-4 mb-3">
+                <h4 class="text-dark border-bottom pb-1">Pricing and Others</h4>
+                    <div class="my-3 w-100 d-flex gap-2">
+                        <div class="w-100">
+                            <label for="Price" class="text-dark mb-2 fs-6">Price</label>
+                            <div class="position-relative me-3">
+                                <i class="position-absolute top-50 translate-middle-y ms-2">ETB</i>
+                                <input type="number" name="product_price" id="Price" placeholder="1000" class="w-100 ps-5 search-input" value="{{ product.price }}">
+                            </div>
+                            <small>The price of single piece</small>
+                        </div>
+                         <div class="w-100 position-relative">
+                            <label for="Weight" class="text-dark mb-2 fs-6">Weight</label>
+                            <div class="position-relative"> 
+                                <i class=" position-absolute top-50 translate-middle-y ms-2">KG</i>
+                                <input type="number" name="product_weight" id="Weight" placeholder="51 " class="w-100  ps-5 search-input" value="{{ product.weight }}">
+                            </div>
+                            <small>Is used to calculate shipping</small>
+                        </div>
+                    </div>
+                    <div class="w-100 position-relative">
+                        <label for="Weight" class="text-dark mb-2 fs-6">Stock</label>
+                        <div class="position-relative"> 
+                            <i class=" position-absolute top-50 translate-middle-y ms-2 ">QUN</i>
+                            <input type="number" name="product_quantity" id="Qunatity" placeholder="100" class="w-100  ps-5 search-input" value="{{ product.quantity }}">
+                        </div>
+                        <small>Is used to calculate shipping</small>
+                    </div>
+                </div>
+                <div  class="bg-white shadow-sm rounded p-4">
+                <h4 class="text-dark border-bottom pb-1 mb-3">Catagory</h4>
+                <div class="position-relative">
+                    <div class="d-flex flex-column me-2 w-100">
+                            <label class="text-dark mb-2">Product Catagory</label>
+                            <div class="ps-2 py-3 search-input w-100 d-flex align-items-center">
+                                <template x-for="x in selectedcat">
+                                    <p  class="mb-0 ps-2 pe-2 d-flex gap-2 me-1 py-1 align-items-center bg-light border rounded"><span x-text="x.fields.name"></span><span style="cursor: pointer;" @click="catagories.push(x);selectedcat=selectedcat.filter(e => e != x)">X</span></p>
+                                </template>
+                                <input  type="text" x-ref="searchCatagoriesInput" @input="catfinder($event)"  style="border: none;outline: none ;">
+                            </div>
+                        </div>
+                            <ul x-show="searchedcat.length > 0" style="list-style: none;z-index: 100;" class="position-absolute w-100 bg-white rounded shadow-sm p-0 mt-3 mb-0">
+                             <template x-for="cat in searchedcat">
+                                 <li @click="selectedcat.push(cat);searchedcat = [];$refs.searchCatagoriesInput.value = '';catagories=catagories.filter(e => e != cat )" style="cursor: pointer;" class="promo-links px-3 py-2 text-dark" x-text="cat.fields.name"></li>
+                             </template>
+                            </ul>
+                </div>
+                    <div class="border-bottom pb-1 d-flex justify-content-between align-items-end mt-3 mb-3">
+                        <h4 class="text-dark mb-0">Specs</h4>
+                        <span @click="items += 1" style="cursor: pointer;"><i class="fa fa-plus "></i></span>
+                    </div>
+                    <template x-for="i in items" >
+                    <div  class="d-flex gap-3 mb-2 w-100 position-relative">
+                        <div class="d-flex flex-column me-2 w-50">
+                            <label >Name</label>
+                            <input  type="text" @change="dataupdater(i,'name',$event.target.value)" :id="`detail-key-${i}`" class="ps-2 search-input w-100" :value="result[i-1] ? result[i-1].name : ''">
+                        </div>
+                        <div class="d-flex flex-column w-50">
+                            <label >desc</label>
+                            <textarea  @change="dataupdater(i,'value',$event.target.value)" :id="`detail-data-${i}`" class="pt-2 ps-2 h-100 search-input" :value="result[i-1] ? result[i-1].value : ''"></textarea>
+                        </div>
+                        <div x-show="i > 1" style="top:10px;right:-10px;" class="bg-dark shadow-sm position-absolute border rounded-circle">
+                            <p style="cursor: pointer;" @click="items -= 1; result.splice(i-1, 1)" class="small text-white btn-square m-0 text-dark">X</p>
+                        </div>
+                    </div>
+                    </template>
+                </div>
+            </div>
+        </div>
+    </div>
+    </div>
+</form>
+
+{%endblock%}

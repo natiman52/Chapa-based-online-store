@@ -1,0 +1,19 @@
+# Python-generated files
+__pycache__/
+*.py[oc]
+build/
+dist/
+wheels/
+*.egg-info
+
+# Virtual environments
+.venv
+.env
+migrations/
+Electro-Bootstrap-1.0.0/
+mediafiles/
+node_modules/
+static_root/
+client.py
+websocket.py
+store.json

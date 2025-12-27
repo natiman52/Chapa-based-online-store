@@ -1,0 +1,18 @@
+<div class="transparent">
+    <div x-bind:class="`my-nav ${showNav ? '' :'slider-side'}  pt-4 pb-0 shadow-sm `">
+        <ul class="list-unstyled sidebar-ul text-primary px-2">
+            <li class="mb-3 text-dark  {%if request.resolver_match.url_name == 'adminhome' %}active{%endif%} p-2"><i class="bi bi-speedometer2 me-2 "></i><a href="{% url 'adminhome' %}" class="text-dark  ">Dashboard</a></li>
+            <li class="mb-3 text-dark  {%if request.resolver_match.url_name == 'admin_product' or request.resolver_match.url_name == 'create_product' %} active {%endif%}p-2"><i class="bi bi-archive-fill me-2 "></i> <a href="{%url 'admin_product' %}" class="text-dark ">Products</a></li>
+            <li class="mb-3 text-dark {%if request.resolver_match.url_name == 'orders' %} active {%endif%}  p-2"><i class="bi bi-diagram-3-fill me-2 "></i>   <a href="{%url 'orders'%}" class="text-dark ">Orders</a></li>
+            <li class="mb-3 text-dark {%if request.resolver_match.url_name == 'customers' or request.resolver_match.url_name == 'customer_detail' %} active {%endif%} p-2"><i class="bi bi-person me-2 "></i> <a href="{%url 'customers'%}" class="text-dark"> Customers</a></li>
+            <li class="mb-3 text-dark {%if request.resolver_match.url_name == 'deliveries' %} active {%endif%} p-2"><i class="bi bi-newspaper me-2"></i> <a href="{%url 'deliveries'%}" class="text-dark">Delieveries</a></li>
+            <li class="mb-3 text-dark p-2"><i class="bi bi-gear-fill  me-2"></i> <a href="#" class="text-dark">Settings</a></li>
+        </ul>
+        <div class="px-3 p-2 border-top d-flex align-items-center justify-content-between">
+            <p style="text-transform: capitalize;" class="mb-0 text-dark fw-bold">{{request.user.name}}</p>
+            <button class="btn fw-bold py-1 pe-1 d-flex align-items-end justify-content-center">
+                <i class="bi text-dark bi-box-arrow-right"></i>
+            </button>
+        </div>
+    </div>
+</div>

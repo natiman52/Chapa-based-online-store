@@ -1,0 +1,72 @@
+{% load i18n %}
+{%load static%}
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.4/css/all.css" />
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.4.1/font/bootstrap-icons.css" rel="stylesheet">
+        <link rel="stylesheet" href="{%static '[test].css' %}">
+        <title>
+            {% block head_title %}
+                {% if title %}
+                    {{ title }}
+                {% else %}
+                    SellTools
+                {% endif %}
+            {% endblock head_title %}
+        </title>
+        {% block extra_head %}
+        {% endblock extra_head %}
+        <style>
+            .loading-page{
+               width: 100vw;
+                height: 100vh;
+                margin: 0;
+                padding: 0;
+                overflow: hidden;
+            }
+            .loading-page::after{
+                width: 100vw;
+                height: 100vh;
+                content: '';
+                background-color: white;
+                position: fixed;
+                top: 0;
+                left: 0;
+                z-index: 9999;
+            }
+        </style>
+    </head>
+    <body hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'>
+        <div id="bodyContanier" class="loading-page">
+        {% block body %}
+        {%block messages_block%}
+        <div id="messagesContainer">
+            {% if messages %}
+            <div id="popupmessage" class="mb-4 pb-2">
+                <div class="fixed-top">
+                    <ul class="list-unstyled">
+                            {% for message in messages %}
+                            <li class="px-4 py-1 bga-{{message.tags}} text-{{message.tags}}">{{ message }}</li>
+                            {% endfor %}
+                        </ul>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+                {%endblock%}
+            <div class="ml-5">
+                {% block content %}
+                {% endblock content %}
+            </div>
+        {% endblock body %}
+        {% block extra_body %}
+        {% endblock extra_body %}
+
+        </div>
+
+        <script src="{%static 'bundle.js' %}"></script>
+    </body>
+</html>

@@ -1,0 +1,51 @@
+ {% extends 'allauth/layouts/base.html' %}
+
+ {% block content %}
+ {%include "utils/navbar.html"%}
+ <div class="container mt-5">
+        <h1>{{question.question}}</h1>
+
+    <div class="d-flex justify-content-end align-items-center gap-2 me-2 mb-3">
+        <h3>Answers</h3>
+              {% if can_answer_question %}
+          {% if category_enabled %}
+              <a href="{% url 'faq:answer_question' question.category.slug question.slug %}">answer question</a>
+          {% else %}
+          <div class="d-flex justify-content-end">
+              <a class="btn btn-primary" href="{% url 'faq:answer_question' question.slug %}"><li class="bi bi-plus"></li></a>
+          </div>
+          {% endif %}
+      {% endif %}
+    </div>
+         {% for answer in question.answer_set.all %}
+         <div class="border p-2 mb-3 rounded">
+             <div class="ms-2 mt-2">
+                <b class="text-dark">{{answer.answer}}</b>
+             </div>
+             <div class="mt-4 d-flex justify-content-end align-items-center">
+                 {% if can_vote_answer %}
+                 <p class="me-2 mb-0 ">helpful? </p>
+                 {% endif %}
+                 <form class="d-flex me-2 align-items-end" action="{% if category_enabled %}{% url 'faq:vote_answer' question.category.slug question.slug answer.slug %}{% else %}{% url 'faq:vote_answer' question.slug answer.slug %}{% endif %}" method="post">
+                        {% csrf_token %}
+                        <input type="hidden" value=True name="vote">
+                        <p type="submit" class="link mb-0 pe-2 border-end text-dark">yes({{answer.helpful}})</p>
+                    </form>
+                    <form class="d-flex align-items-end" action="{% if category_enabled %}{% url 'faq:vote_answer' question.category.slug question.slug answer.slug %}{% else %}{% url 'faq:vote_answer' question.slug answer.slug %}{% endif %}" method="post">
+                        {% csrf_token %}
+                        <input type="hidden" value=False name="vote">
+                        <p type="submit" class="link mb-0 text-dark">no({{answer.not_helpful}})</p>
+                    </form>
+             </div>
+         </div>
+         {% endfor %}
+
+      <hr>
+      {% if comments_allowed %}
+          {% include 'faq/comments.html' %}
+      {% endif %}
+
+
+ </div>
+{%include "utils/footer.html"%}
+ {% endblock %}

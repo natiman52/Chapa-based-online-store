@@ -1,0 +1,17 @@
+{%load static%}
+<div class="bg-white fixed-top border-bottom mx-2">
+    <div class="container-fluid">
+        <nav class="d-flex align-items-center py-2">
+            <div class="d-flex w-100 align-items-center justify-content-between">
+                <span class="fs-4 fw-bold text-primary">SellTools</span>
+                <div @click="showNav =!showNav" class="d-flex d-md-none d-lg-none ">
+                    <i  class="fs-4 text-primary fa fa-bars"></i>
+                </div>
+            </div>
+            <div style="flex:1;" class="d-none d-md-flex d-lg-flex align-items-center justify-content-end">
+                    <a href="" class="link btn-square rounded-circle border"><i class="bi bi-person"></i></a>
+                    <button class="ms-2 btn btn-danger py-1">logout</li>
+            </div>
+        </nav>
+    </div>
+</div>

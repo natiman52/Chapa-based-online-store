@@ -1,0 +1,16 @@
+<div class="d-flex justify-content-end mt-3">
+<div class="d-flex gap-2 align-items-center">
+<div class="rating">
+<input type="radio" hx-post="{%url 'my-profile' %}" hx-trigger="change" id="star6"  name="rating" value="5" />
+<label for="star6" title="5 stars"><i class="fa fa-star"></i></label>
+<input type="radio" hx-post="{%url 'my-profile' %}" hx-trigger="change" id="star7" name="rating" value="4" />
+<label for="star7" title="4 stars"><i class="fa fa-star"></i></label>
+<input type="radio" id="star8" hx-post="{%url 'my-profile' %}" hx-trigger="change" name="rating" value="3" />
+<label for="star8" title="3 stars"><i class="fa fa-star"></i></label>
+<input type="radio" id="star9" hx-post="{%url 'my-profile' %}" hx-trigger="change" name="rating" value="2" />
+<label for="star9" title="2 stars"><i class="fa fa-star"></i></label>
+<input type="radio" hx-post="{%url 'my-profile' %}" hx-trigger="change" hx-target="none" id="star10" name="rating" value="1" />
+<label for="star10" title="1 star"><i class="fa fa-star"></i></label>
+</div>
+</div>
+</div>

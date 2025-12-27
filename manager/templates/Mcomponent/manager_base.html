@@ -1,0 +1,143 @@
+{%extends "allauth/layouts/base.html"%}
+{%block extra_head%}
+<style>
+    .create_product_overlay{
+        z-index: 102;
+        right: 0;
+        top:0;
+        background-color: rgba(255, 255, 255, 0.7);
+        
+    }
+    .active {
+        font-weight: bold;
+        background-color: #1c1c84;
+        box-shadow: inset 0 0 10px rgba(221, 221, 221, 0.5); 
+        border-radius: 5px;
+        width: 100%;/* Adjust values as needed */
+   }
+   .active *{
+        color: white !important;
+
+   }
+   li{
+    transition: all 0.2s ease-in-out;
+   }
+   .sidebar-ul li:hover{
+    scale: 1.1;
+   }
+   .sidebar-ul a:hover{
+    color:inherit;
+   }
+   .my-nav{
+    width: 14rem;
+    position:fixed;
+    height: 100vh;
+    background-color: white;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    z-index: 100;
+   }
+    .mar{
+        margin-left: 14rem;
+        background-color: ghostwhite;
+        min-height: calc(100vh - 5rem);
+
+    }
+
+    .mtb-5{
+        margin-top: 1rem;
+        max-height: 10000px;
+        margin-bottom: 1rem;
+        transition: all 0.5s ease-in-out;
+    }
+
+    @media screen and (max-width:767px) {
+        .myFilter{
+            padding: 0rem !important;
+            max-height:0px !important;
+            overflow: hidden;
+            margin: 0 !important;
+        }
+   .my-nav{
+    width: 14rem;
+    position:fixed;
+    height: 110vh;
+    background-color: white;
+    overflow: hidden;
+    transition: all 0.3s ease-in-out;
+
+   }
+   .flex-xs-wrap{
+    flex-wrap: wrap;
+   }
+   .d-xs-none{
+    display: none !important;
+   }
+   .d-xs-block{
+    display: block !important;
+   }
+       .slider-side{
+        margin-left: -14rem !important;
+    }
+   .mar{
+        margin-left: 0rem;
+        background-color: ghostwhite;
+        min-height: calc(100vh - 4rem);
+    }
+   }
+   .search-input{
+    padding-left: 2rem;
+    border-radius: 5px;
+    border: none;
+    box-shadow: 0 0 5px rgba(0,0,0,0.1);
+    height: 2.5rem;
+   }
+   .range{
+    max-width: 150px;
+   }
+   .search-input:focus{
+    outline: none;
+    box-shadow: 0 0 8px rgba(0,0,0,0.2);
+   }
+   .unstayled{
+    list-style: none;
+   }
+   .promo-links:hover{
+    background-color: rgb(243, 243, 255);
+   }
+
+</style>
+<script>
+    window.onload = function() {
+        setTimeout
+        (function() {
+            var loader = document.getElementById("loader");
+            if(loader){
+                loader.style.display = "none"
+            }
+        }, 500);
+        
+    };
+</script>
+{%endblock%}
+{%block content%}
+    <!-- Spinner Start -->
+    <div id="spinner"
+        class="show bg-white position-fixed translate-middle w-100 vh-100 top-50 start-50 d-flex align-items-center justify-content-center">
+        <div class="spinner-border text-primary" style="width: 3rem; height: 3rem;" role="status">
+            <span class="sr-only">Loading...</span>
+        </div>
+    </div>
+    <!-- Spinner End -->
+<div x-data="{showNav:false,showFilter:false}">
+    {%include 'Mcomponent/navbar.html'%}
+    <div  class=" d-flex mt-5 position-relative">
+        {%include 'Mcomponent/sidebar.html'%}
+        <div class="mar w-100">
+            {%block stuff%}
+            {%endblock stuff%}
+        </div>
+    </div>
+</div>
+{%endblock%}

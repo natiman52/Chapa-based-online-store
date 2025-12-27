@@ -1,0 +1,27 @@
+
+{% block cart %}
+                                <div id="cart-container" class="col-md-5 col-lg-4 text-center text-lg-end">
+                                    <div class="d-inline-flex align-items-center justify-content-end">
+                                        {%if request.user.is_authenticated%}
+                                        <a href="{%url 'cart_view'%}" class="text-muted d-flex align-items-center justify-content-center me-3  position-relative"><span
+                                            class="rounded-circle btn-sm-square border bg-light">
+                                            {%if request.user.carts.all.count%}
+                                            <span style="padding-top: 2px;padding-bottom: 2px;" class="position-absolute top-50 start-100 translate-middle badge rounded-circle bg-danger px-1">{{request.user.carts.all.count}}</span>                                       
+                                            {%endif%}
+                                            <i class="fas fa-shopping-cart"></i>
+                                        </a>
+                                        <a href="{%url 'my-profile'%}" class="text-muted d-flex align-items-center justify-content-center "><span
+                                            class="rounded-circle btn-sm-square border bg-light"><i class="fas fa-user"></i></span>
+                                        </a>                            
+                                        {%else%}
+                                        <a href="{%url 'account_login' %}" class="text-muted d-flex align-items-center justify-content-center me-3 "><span
+                                                class="rounded-circle btn-sm-square border bg-light"><i class="fas fa-shopping-cart"></i></span>
+                                            </a>
+                                            <a href="{%url 'account_login'%}" class=" position-relative text-muted d-flex align-items-center justify-content-center"><span
+                                                class="rounded-circle btn-sm-square border bg-light"><i class="fas fa-user"></i></span>
+                                                <span style="padding-top: 2px;padding-bottom: 2px;" class="position-absolute top-50 start-100 translate-middle badge rounded-circle bg-danger px-1">1</span>
+                                            </a>
+                                            {%endif%}
+                                    </div>
+                                </div>
+{%endblock%}

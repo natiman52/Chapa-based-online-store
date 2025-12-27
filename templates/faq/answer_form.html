@@ -1,0 +1,34 @@
+ {%extends 'allauth/layouts/base.html'%}
+ 
+ {%block content%}
+ <style>
+    textarea {
+        all: unset;
+        display: block;
+        width: 100%;
+        border: 1px solid gray;
+        padding: 10px 10px 10px 10px;
+        border-radius: 10px;
+        border-color: gray;
+        color: black;
+    }
+
+    label {
+        display: none;
+    }
+</style>
+ {%include 'utils/navbar.html' %}
+ <div class="container my-5">
+    <div class="mb-4">
+            <a class="text-dark" href="{{question.get_absolute_url}}"><h1>{{question.question}}</h1></a>
+    </div>
+     <form method="post">
+         {% csrf_token %}
+         {{form}}
+         <div class="d-flex justify-content-end mt-3">
+             <input class=" btn btn-success" type="submit">
+         </div>
+     </form>
+ </div>
+{%include "utils/footer.html"%}
+ {%endblock%}

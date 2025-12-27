@@ -1,0 +1,167 @@
+{%extends "Mcomponent/manager_base.html"%}
+{%block stuff%}
+            <div class=" mx-4 my-5 ">
+                <div class="d-flex justify-content-between mb-4">
+                    <div>
+                        <h4 class=" text-dark ">Products</h4>
+                        <p class="mb-0 mt-1">the first 100 products</p>
+                    </div>
+                    <div class="d-flex align-items-end">
+                        <a href="{%url 'create_product' %}" class="btn btn-primary"><i class="fa fa-plus me-2"></i> Product</a>
+                    </div>
+                </div>
+                <div class="d-flex align-items-end justify-content-between">
+                    <div @click="showFilter = !showFilter" class="d-flex">
+                            <span style="display: none;" class="d-xs-block dark small text-dark fw-bold mb-2"><i class="fa fa-bars p-2 border rounded"></i> Filter Products</span>
+                        </div>
+                       
+                </div>
+                <div x-bind:class="`mtb-5 bg-white rounded-3 shadow-sm p-4 d-flex flex-wrap justify-content-between align-items-center border ${!showFilter ? 'myFilter':''}`">
+                    <form x-data="{search:'{{request.GET.search}}',price_in:'{{request.GET.price_in}}',price_out:'{{request.GET.price_out}}',weight:'{{request.GET.weight}}'}" method="get" action="" enctype="multipart/form-data" class="w-100">
+                        <div class="row g-3">
+                            <!-- Keyword Search -->
+                            <div class="col-md-3">
+                                <label class="form-label small text-muted fw-bold text-uppercase ls-1">Keyword</label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light border-end-0"><i class="bi bi-search text-muted"></i></span>
+                                    <input x-model="search" type="search" name="search" class="form-control border-start-0 bg-light ps-0" placeholder="Search products...">
+                                </div>
+                            </div>
+
+                            <!-- Price Range -->
+                            <div class="col-md-4">
+                                <label class="form-label small text-muted fw-bold text-uppercase ls-1">Price Range</label>
+                                <div class="d-flex align-items-center gap-2">
+                                    <div class="input-group">
+                                        <span class="input-group-text bg-light border-end-0"><i class="fa fa-dollar-sign text-muted"></i></span>
+                                        <input x-model="price_in" type="number" name="price_in" class="form-control border-start-0 bg-light ps-0" placeholder="Min">
+                                    </div>
+                                    <span class="text-muted">-</span>
+                                    <div class="input-group">
+                                        <span class="input-group-text bg-light border-end-0"><i class="fa fa-dollar-sign text-muted"></i></span>
+                                        <input x-model="price_out" type="number" name="price_out" class="form-control border-start-0 bg-light ps-0" placeholder="Max">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Weight -->
+                            <div class="col-md-2">
+                                <label class="form-label small text-muted fw-bold text-uppercase ls-1">Weight</label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light border-end-0"><i class="fa fa-weight-hanging text-muted"></i></span>
+                                    <input x-model="weight" type="number" name="weight" class="form-control border-start-0 bg-light ps-0" placeholder="Kg">
+                                </div>
+                            </div>
+
+                            <!-- Promotion Status -->
+                            <div class="col-md-3" x-data="{current:'{{request.GET.promotion}}', promotion:false}">
+                                <label class="form-label small text-muted fw-bold text-uppercase ls-1">Status</label>
+                                <div class="position-relative">
+                                    <div @click="promotion = !promotion" class="form-select bg-light d-flex align-items-center justify-content-between cursor-pointer" style="cursor: pointer;">
+                                        <span :class="current == 'promoted' ? 'text-success fw-bold' : (current == 'Unpromoted' ? 'text-danger fw-bold' : 'text-dark')" x-text="current ? (current == 'promoted' ? 'Promoted' : 'Unpromoted') : 'All Status'"></span>
+                                    </div>
+                                    <input type="hidden" name="promotion" x-bind:value="current == 'promoted' ? 'Promoted' : (current == 'Unpromoted' ? 'Unpromoted' : '')">
+                                    
+                                    <ul x-show="promotion" @click.away="promotion = false" x-transition class="dropdown-menu show w-100 mt-1 shadow-sm border-0" style="z-index: 1000;">
+                                        <li><a @click="current=''; promotion=false" class="dropdown-item" href="#">All Status</a></li>
+                                        <li><a @click="current='promoted'; promotion=false" class="dropdown-item text-success fw-bold" href="#">Promoted</a></li>
+                                        <li><a @click="current='Unpromoted'; promotion=false" class="dropdown-item text-danger fw-bold" href="#">Unpromoted</a></li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Action Buttons -->
+                        <div class="row mt-4">
+                            <div class="col-12 d-flex justify-content-end gap-2">
+                                <a href="{% url 'admin_product' %}" class="btn btn-light border px-4 fw-bold text-muted">Clear Filters</a>
+                                <button type="submit" class="btn btn-primary px-5 fw-bold shadow-sm">Apply Filter</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                
+                <div class="d-xs-none row bg-white rounded-sm shadow-sm mx-1 mt-5">
+                   <div class="col-1 ps-3 py-3 px-0 border-end text-dark bg-light">
+                    Image
+                   </div>
+                   <div class="col-2 ps-3 py-3 px-0 border-end text-dark bg-light">
+                    Name
+                   </div>
+                   <div class="col-2 ps-3 py-3 px-0 border-end text-dark bg-light">
+                    Price and Weight
+                   </div>
+                   <div class="col-2 ps-3 py-3 px-0 border-end text-dark bg-light">
+                    Inventory
+                   </div>
+                   <div class="col-2 ps-3 py-3 px-0 border-end text-dark bg-light">
+                    Reactions
+                   </div>
+                   <div class="col-3 ps-3 py-3 px-0 bg-light text-dark">
+                    Actions
+                   </div>
+                   <div class="row">
+                    {%for product in products%}
+                    <hr class="w-100 mb-1">
+                    <div class=" col-1 py-2 ps-1 px-3 d-flex flex-column  ms-2 justify-content-center">
+                        <img src="/media/{{product.images.first.img}}" alt="{{product.name}}" class="img-fluid" style="max-height: 80px;">
+                       
+                    </div>
+                    <div class="col-2 py-2 px-3 d-flex align-items-center">
+                        <a href="{%url 'product-detail' id=product.id%}">{{product.name}}</a>
+                    </div>
+                    <div class="col-2 py-2 px-3 d-flex align-items-center flex-wrap">
+                        <span class="price-sale me-1">ETB {{product.price| floatformat:-3}}</span><span class="text-dark">({{product.weight}} kg/piece)</span>
+                    </div>
+                     <div class="col-2 py-2 px-3 d-flex align-items-center">
+                       <span class="me-1">{{product.quantity}} pieces</span>
+                    </div>
+                    <div class="col-2 py-2 px-3 d-flex align-items-center">
+                       <span class="me-1">{{product.views.count}} visitor{%if product.views.count > 1%}s{%endif%}</span>{%if product.boughted_by.count != 0 %}<span>({{product.boughted_by.count}} times boughted)</span>{%endif%}
+                    </div>
+                    <div class="col-2 py-2 px-3 d-flex align-items-center">
+                       {%if product.promoted %}
+                        <a href="{%url 'change_promote_status' id=product.id %}" class="btn btn-sm btn-success me-2">Promoted</a>
+                        {% else %}
+                        <a href="{%url 'change_promote_status' id=product.id %}" class="btn btn-sm btn-warning me-2">Promote</a>
+                        {% endif %}
+                        <a href="{%url 'update_product' id=product.id%}" class="btn btn-sm btn-primary me-2"><i class="bi bi-pen"></i></a>
+                         <a href="" class="btn btn-sm btn-danger"><i class="bi bi-trash-fill"></i></a>  
+                    </div>
+                    {%endfor%}
+                   </div>
+                </div>
+                <div style="display: none;" class="d-xs-block mt-2">
+                    <div>
+                        {%for product in products%}
+                        <div class="position-relative mb-2 border rounded p-2 bg-white d-flex align-items-center">
+                            <div style="transform: translateY(-100%);" class="position-absolute top-100 start-0 bg-light px-2 py-1 rounded-end ">
+                                <a href="" class="btn btn-sm border btn-small py-1"><i class="bi small bi-pen"></i></a>
+                                <a href="" class="btn btn-sm border btn-small py-1"><i class="bi small bi-trash-fill"></i></a>
+                            </div>  
+                            <div style="max-width: 100px;" class="py-2 ps-1 px-3 d-flex flex-column  ms-2 justify-content-center">
+                            <img src="/media/{{product.images.first.img}}" alt="{{product.name}}" class="img-fluid" style="max-height: 80px;">
+                            </div>
+                            <div class="flex-grow-1 ">
+                                <div class="d-flex justify-content-between align-items-center w-100 mb-4">
+                                    <a href="{%url 'product-detail' id=product.id%}">{{product.name}}</a>
+                                    {%if product.promoted %}
+                                    <span class="badge bg-success">Promoted</span>
+                                    {%else%}
+                                        <a href="" class="badge btn-warning">Promote</a>
+                                    {%endif%}
+                                </div>
+                                 <div class="d-flex justify-content-between">
+                                    <div>
+                                        <p class="price-sale mb-1 me-1">ETB {{product.price| floatformat:-3}}</p>
+                                        <p class="text-dark mb-0">({{product.weight}} kg/piece)</p>
+                                    </div>
+                                    
+                                </div>
+                            </div>
+                        </div>
+                        {%endfor%}
+                    </div>
+                </div>
+            </div>
+{%endblock%}

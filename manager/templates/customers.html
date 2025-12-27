@@ -1,0 +1,77 @@
+{% extends "Mcomponent/manager_base.html" %}
+{% block stuff %}
+<div class="mx-4 my-5">
+    <div class="d-flex justify-content-between mb-4">
+        <div>
+            <h4 class="text-dark">Customers</h4>
+            <p class="mb-0 mt-1">List of all registered customers</p>
+        </div>
+    </div>
+
+    <div class="bg-white rounded-3 shadow-sm p-4">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle">
+                <thead class="bg-light">
+                    <tr>
+                        <th class="py-3 ps-3 border-0">User</th>
+                        <th class="py-3 border-0">Contact</th>
+                        <th class="py-3 border-0">Location</th>
+                        <th class="py-3 border-0">Joined Date</th>
+                        <th class="py-3 border-0 text-end pe-3">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for user in users %}
+                    <tr>
+                        <td class="ps-3 py-3">
+                            <div class="d-flex align-items-center">
+                                <div class="avatar-sm me-3 bg-light rounded-circle d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
+                                    {% if user.img %}
+                                    <img src="{{ user.img.url }}" alt="{{ user.name }}" class="rounded-circle img-fluid" style="width: 40px; height: 40px; object-fit: cover;">
+                                    {% else %}
+                                    <span class="text-primary fw-bold">{{ user.name|slice:":1" }}</span>
+                                    {% endif %}
+                                </div>
+                                <div>
+                                    <h6 class="mb-0 text-dark">{{ user.name }}</h6>
+                                    <small class="text-muted">ID: #{{ user.id }}</small>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="py-3">
+                            <div class="d-flex flex-column">
+                                <span class="mb-1"><i class="bi bi-telephone me-2 text-muted small"></i>{{ user.phone }}</span>
+                                {% if user.email %}
+                                <span><i class="bi bi-envelope me-2 text-muted small"></i>{{ user.email }}</span>
+                                {% endif %}
+                            </div>
+                        </td>
+                        <td class="py-3">
+                            {% if user.location %}
+                            <span>{{ user.location }}</span>
+                            {% else %}
+                            <span class="text-muted fst-italic">Unknown</span>
+                            {% endif %}
+                        </td>
+                        <td class="py-3">
+                            {{ user.created|date:"M d, Y" }}
+                        </td>
+                        <td class="py-3 text-end pe-3">
+                            <a href="{% url 'customer_detail' id=user.id %}" class="btn btn-sm btn-light border text-primary fw-bold">
+                                View Details
+                            </a>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="5" class="text-center py-5 text-muted">
+                            No customers found.
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

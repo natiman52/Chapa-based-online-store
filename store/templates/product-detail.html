@@ -1,0 +1,230 @@
+{%extends "allauth/layouts/base.html"%}
+{%load store%}
+{%block content%}
+
+{%include "utils/navbar.html" %}
+
+
+    <style>
+        .product-image-container {
+            height: 300px;
+            width: 100%;
+            background-color: #f8f9fa;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+        @media (min-width: 768px) {
+            .product-image-container {
+                height: 500px;
+            }
+        }
+        .product-image-main {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+        .thumbnail-container {
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        .thumbnail-container:hover {
+            transform: scale(1.05);
+        }
+    </style>
+    <div class="container-fluid shop py-4">
+        <div class="container py-5">
+            <div class="row g-4">
+                <div class="col-12">
+                    <div class="row g-4 single-product">
+                        <div x-data="{current:'/media/{{product.images.first.img}}'}" class="col-xl-7">
+                            <div class="">
+                                <div class="mb-4 single-inner bg-light rounded product-image-container">
+                                    <img class="img-fluid rounded product-image-main" :src="current" alt="">
+                                </div>
+                                <div class="d-flex gap-4 overflow-auto pb-2">
+                                    {%for i in product.images.all%}
+                                        <div @click="current='/media/{{i.img}}' " class="single-inner bg-light rounded thumbnail-container">
+                                            <img style="width: 80px;height:80px;object-fit: cover;" src="/media/{{i.img}}" class="img-fluid rounded" alt="Image">
+                                        </div>
+                                    {%endfor%}
+                                </div>
+                            </div>
+                        </div>
+                        <div x-data="{'value':1,maxi:Number('{{product.quantity}}')}" class="col-xl-5">
+                            <h3 class="fw-bold mb-3 text-capitalize">{{product.name}}</h3>
+                            {%if boughted_by.count > 1 %}
+                            <p style="color: black;"><span >Boughted By: </span>{{boughted_by.count}} people</p>
+                            {%endif%}
+                            <h4 style="color: red;" class="fw-bold mb-3">ETB {{product.price}}</h4>
+                            <div class="mb-2 d-flex align-items-center">
+                                {%with ratings=product.rating.all|get_total_star:product.rating.all.count%}
+                                {%for i in ratings|get_range%}
+                                <i class="bi bi-star-fill bg-golden"></i>
+                                {%endfor%}
+                                {%if ratings == 0 %}
+                                <i class="bi bi-star bg-golden"></i>
+                                {%endif%}
+                                <p class="ms-1 my-0">({{product.rating.all.count}})</p>
+                                {%endwith%}
+                            </div>
+                            <div class="mb-2 gap-2 d-flex">
+                                {%for c in product.catagory.all %}
+                                <a href="{%url 'catagory' catagory=c.name %}" class="px-4 py-1 rounded-pill border">
+                                    <p class="mb-0">{{c.name}}</p>
+                                </a>
+                                {%endfor%}
+                            </div>
+                            <div class="d-flex flex-column mb-3">
+                                {%if product.quantity  %}
+                                <small>Available: <strong class="text-primary">{{product.quantity}} items in stock</strong></small>
+                                {%else%}
+                                <small>Available: <strong class="text-danger">out of stock</strong></small>
+
+                                {%endif%}
+                            </div>
+                            <p class="mb-4">
+                                {{product.about}}
+                            </p>
+                            <div  class="input-group quantity mb-4" style="width: 100px;">
+                                <div class="input-group-btn">
+                                    <button id="minus-qu" x-bind:disabled="value == 1"  @click="value = value - 1" class="btn btn-sm rounded-circle bg-light border">
+                                        <i class="fa fa-minus"></i>
+                                    </button>
+                                </div>
+                                <input type="intger" class="form-control text-center border-0" :value="value">
+                                <div class="input-group-btn">
+                                    <button id="plus-qu" x-bind:disabled="value == maxi" @click="value = value + 1" class="btn btn-sm rounded-circle bg-light border">
+                                        <i class="fa fa-plus"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            {%if user.is_authenticated%}
+                            <div class="d-flex align-items-center gap-2">
+                                <form method="get" action="{%url 'checkout' %}">
+                                    <input type="hidden" name="items" :value="`{{product.id}}-${value},`">
+                                    <button style="width: 100px;" class="rounded-pill border-none btn btn-success"><a>Buy</a></button>
+                                </form>
+                                {%with test=product|find_if_exists:request.user.carts.all%}
+                                <div class="position-relative" x-data="{%if test %}{show:false}{%else%}{show:true}{%endif%}">
+                                    <input type="hidden" value="{{product.id}}" name="id" id="item-{{item.id}}">
+                                    <div x-show="show"  x-on:htmx:after-request="show = false" hx-indicator="#spinner-replace-{{item.id}}"  hx-post="{%url 'add-cart'%}" hx-include="#item-{{item.id}}" hx-target="#cart-container" hx-swap="outerHTML" class="fs-4 p-4 rounded-circle border btn-sm-square">
+                                        <i class="text-primary bi bi-bag-plus-fill"></i>
+                                    </div>
+                                    <div x-show="!show" x-on:htmx:after-request="show = true" hx-indicator="#spinner-replace-{{item.id}}"  hx-post="{%url 'remove-cart'%}" hx-include="#item-{{item.id}}" hx-target="#cart-container" hx-swap="outerHTML" class="fs-4 p-4 rounded-circle border btn-sm-square">
+                                        <i class="text-success bi bi-bag-check-fill"></i>
+                                    </div>
+                                    <div id="spinner-replace-{{item.id}}" class="spinner-replace position-absolute top-50 start-50 translate-middle bg-white">
+                                        <div class="spin-animate">
+                                            <i class=" bi bi-arrow-repeat"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                                {%endwith%}
+                                {%else%}
+                                <div class="d-flex align-items-center gap-2">
+                                    <button style="width: 100px;" class="rounded-pill border-none btn btn-success">Buy </button>
+                                    <a href="{%url 'account_login'%}" class="fs-4 p-4 rounded-circle border btn-sm-square">
+                                            <i class=" text-primary bi bi-bag-plus-fill"></i>
+                                    </a>
+                                </div>
+                                {%endif%}
+                        </div>
+                        <div class="col-lg-12">
+                            <nav>
+                                <div class="nav nav-tabs mb-3">
+                                    <button class="nav-link active border-white border-bottom-0" type="button"
+                                        role="tab" id="nav-about-tab" data-bs-toggle="tab" data-bs-target="#nav-about"
+                                        aria-controls="nav-about" aria-selected="true">Details</button>
+                                </div>
+                            </nav>
+                            <div class="tab-content mb-5">
+                                <div class="tab-pane active" id="nav-about" role="tabpanel"
+                                    aria-labelledby="nav-about-tab">
+                                    
+                                    <div class="">
+                                        {%for det in product.detail%}
+                                            <div>  
+                                                <b style="color: black;" class="fw-bold">{{det.name}}:</b>
+                                                <p class="small">{{det.value}}</p>
+                                            </div>
+                                        {%endfor%}
+                                    </div>
+                                </div>
+                               
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+        <div class="container-fluid related-product mb-4">
+        <div class="container">
+            <div class="mx-auto text-center pb-3" style="max-width: 700px;">
+                <h4 class="text-primary mb-4 border-bottom border-primary border-2 d-inline-block p-2 title-border-radius wow fadeInUp"
+                    data-wow-delay="0.1s">Related Products</h4>
+            </div>
+            <div class="d-flex pt-4">
+                {%for item in related%}
+                <div class="related-item rounded">
+                    <div class="related-item-inner border border-bottom-0 rounded">
+                        <div class="related-item-inner-item">
+                            <img style="height: 250px;width: 300px;" src="/media/{{item.images.first.img}}" class="img-fluid rounded-top" alt="">
+                        </div>
+                        <div class="text-center rounded-bottom p-4 pb-2">
+                            <p class="d-block mb-2">{{item.catagory.first.name}}</p>
+                            <a href="{%url 'product-detail' id=item.id%}" class="d-block h4">{{item.name}}</a>
+                            <span class="text-primary fs-5">ETB {{item.price}}</span>
+                        </div>
+                    </div>
+                    <div class="related-item-add border border-top-0 rounded-bottom  text-center p-4 pt-2 pt-0">
+                        <div class="d-flex justify-content-center pb-4">
+                            <a href="{%url 'checkout'%}?items={{item.id}}-1,">
+                                <button style="width: 100px;" class="rounded-pill border-none btn btn-primary" >Buy</button>
+                            </a>
+                        </div>
+                        <div class="d-flex justify-content-between align-items-center">
+                             <div class="d-flex align-items-center">
+                                {%with ratings=item.rating.all|get_total_star:item.rating.all.count%}
+                                {%for i in ratings|get_range%}
+                                <i class="bi bi-star-fill bg-golden"></i>
+                                {%endfor%}
+                                {%if ratings == 0 %}
+                                <i class="bi bi-star bg-golden"></i>
+                                {%endif%}
+                                <p class="ms-1 my-0">({{ratings}})</p>
+                                {%endwith%}
+                            </div>
+                            <div class="d-flex">
+                              {%if user.is_authenticated%}
+                                {%with test=item|find_if_exists:request.user.carts.all%}
+                                <div class="position-relative" x-data="{%if test %}{show:false}{%else%}{show:true}{%endif%}">
+                                    <input type="hidden" value="{{item.id}}" name="id" id="item-{{item.id}}">
+                                    <div x-show="show"  x-on:htmx:after-request="show = false" hx-indicator="#spinner-replace-{{item.id}}"  hx-post="{%url 'add-cart'%}" hx-include="#item-{{item.id}}" hx-target="#cart-container" hx-swap="outerHTML" class="rounded-circle border btn-sm-square">
+                                        <i class="text-primary bi bi-bag-plus-fill"></i>
+                                    </div>
+                                    <div x-show="!show" x-on:htmx:after-request="show = true" hx-indicator="#spinner-replace-{{item.id}}"  hx-post="{%url 'remove-cart'%}" hx-include="#item-{{item.id}}" hx-target="#cart-container" hx-swap="outerHTML" class=" rounded-circle border btn-sm-square">
+                                        <i class="text-success bi bi-bag-check-fill"></i>
+                                    </div>
+                                    <div id="spinner-replace-{{item.id}}" class="spinner-replace position-absolute top-50 start-50 translate-middle bg-white">
+                                        <div class="spin-animate">
+                                            <i class=" bi bi-arrow-repeat"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                                {%endwith%}
+                                {%else%}
+                                {%endif%}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {%endfor%}
+            </div>
+        </div>
+    </div>
+{%endblock%}

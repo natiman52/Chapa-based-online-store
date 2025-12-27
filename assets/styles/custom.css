@@ -1,0 +1,18 @@
+.hiddenaftertime{
+    display: none;
+}
+
+@keyframes shakeit {
+    0%{
+        transform: rotate(150deg);
+    }
+    50%{
+        transform: rotate(-150deg);
+    }
+    75%{
+        transform: rotate(-50deg);
+    }
+    100%{
+        transform: rotate(0);
+    }
+}

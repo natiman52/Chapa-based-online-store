@@ -1,0 +1,244 @@
+{%load store%}
+
+<style>
+.rating {
+  direction: rtl;
+  display: inline-flex;
+}
+.htmx-request{
+    display: flex !important;
+}
+.rating input[type="radio"] {
+  visibility: hidden;
+  width: 0;
+  height: 0;
+}
+.rating label {
+  color: #ddd;
+  cursor: pointer;
+  transition: color 0.2s;
+}
+.rating input[type="radio"]:checked ~ label,
+.rating label:hover,
+.rating label:hover ~ label {
+  color: #ffc107;
+}
+</style>
+<div class="main-content "> 
+    <div class="container-fluid py-4" >
+        <!-- Header Section -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h1 class="fw-bold text-primary mb-0">
+                        <i class="bi bi-credit-card-2-front me-2"></i>
+                        Transactions
+                    </h1>
+                    <span class="badge bg-primary fs-6" >{{items.count}} Record{%if items.count > 1%}s{%endif%}</span>
+                </div>
+                
+                <!-- Search and Filter Bar -->
+                <div class="row g-3 mb-4">
+                    <div class="col-md-6">
+                        <div class="input-group">
+                            <span class="input-group-text bg-white border-end-0">
+                                <i class="bi bi-search text-muted"></i>
+                            </span>
+                            <input 
+                                type="text" 
+                                name="search"
+                                class="form-control border-start-0" 
+                                placeholder="Search transactions..." 
+                                hx-trigger="keyup[key=='Enter']"
+                                hx-target="#transaction_block" hx-indicator="#clearLoader" hx-swap="outerHTML"  hx-get="{%url 'my-profile' %}"
+                            >
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <select hx-indicator="#clearLoader"  name="sort" id="transaction_sort" hx-target="#transaction_block" hx-swap="outerHTML"   hx-get="{%url 'my-profile' %}" class="form-select" >
+                            <option value="date">Sort by Date</option>
+                            <option value="price">Sort by Price</option>
+                            <option value="detail">Sort by Detail</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {%block transaction_block %}
+    <div class="position-relative" id="transaction_block">
+        <!-- Desktop Table View -->
+        <div class="d-none d-lg-block">
+            <div class="card shadow-sm border-0">
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th class="border-0 fw-semibold text-muted text-uppercase small ps-4">Image</th>
+                                    <th class="border-0 fw-semibold text-muted text-uppercase small">Name</th>
+                                    <th class="border-0 fw-semibold text-muted text-uppercase small">Price</th>
+                                    <th class="border-0 fw-semibold text-muted text-uppercase small">Quantity</th>
+                                    <th class="border-0 fw-semibold text-muted text-uppercase small">Date</th>
+                                    <th class="border-0 fw-semibold text-muted text-uppercase small">About</th>
+                                    <th class="border-0 fw-semibold text-muted text-uppercase small">Rating</th>
+
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {%for i in items%}
+                                <tr class="transaction-row">
+                                    <td class="ps-4">
+                                            <a href="{%url 'product-detail' id=i.product.id %}">
+                                                <div  class="transaction-image">
+                                                    <img style="max-width: 100px;max-height: 67px;" src="/media/{{i.product.images.first.img}}" alt="transaction-img" class="img-fluid rounded">
+                                                </div>
+                                            </a>
+                                        </td>
+                                        <td>
+                                           <div class="fw-semibold text-dark" >{{i.product.name}}</div>
+                                            <small class="text-muted" >{{i.product.catagory.first.name}}</small>
+                                        </td>
+                                        <td>
+                                            <span class="fw-bold price-sale" >ETB {{i.product.price}}</span>
+                                        </td>
+                                        <td>
+                                            <span class="text-success fw-semibold" >{{i.quantity}}</span>
+                                        </td>
+                                        <td>
+                                            <span class="text-muted" >{{i.date}}</span>
+                                        </td>
+                                        <td>
+                                            <span class="text-dark" >{{i.product.about}}</span>
+                                        </td>
+                                        <td>
+                                            <div class=" mt-0">
+                                                {%with rated_or=i.product.rating.all|find_rated:request.user %}
+                                                {%if  rated_or.exists%}
+                                                <div class="d-flex justify-content-center align-items-center gap-1">
+                                                    <span><i class="fa fa-star text-warning"></i> ({{rated_or.first.rate}})</span>
+                                                </div>
+                                                {%else%}
+                                                <div class="position-relative rating d-flex gap-1 align-items-center justify-content-end">
+                                                        <input type="hidden" name="payment" value="{{i.id}}">
+                                                        <input type="radio" hx-swap="outerHTML" hx-indicator="#rateloader-{{i.id}}"  hx-target="#transaction_block" hx-include="[name='payment']" hx-post="{%url 'my-profile' %}" hx-trigger="change" id="star6"  name="rating" value="5" />
+                                                        <label for="star6"   title="5 stars"><i class="fa fa-star"></i></label>
+                                                        <input type="radio" hx-swap="outerHTML" hx-indicator="#rateloader-{{i.id}}"  hx-target="#transaction_block" hx-include="[name='payment']" hx-post="{%url 'my-profile' %}" hx-trigger="change" id="star7" name="rating" value="4" />
+                                                        <label for="star7" title="4 stars"><i class="fa fa-star"></i></label>
+                                                        <input type="radio" hx-swap="outerHTML" hx-indicator="#rateloader-{{i.id}}" hx-target="#transaction_block" hx-include="[name='payment']" id="star8" hx-post="{%url 'my-profile' %}" hx-trigger="change" name="rating" value="3" />
+                                                        <label for="star8" title="3 stars"><i class="fa fa-star"></i></label>
+                                                        <input type="radio" hx-swap="outerHTML" hx-indicator="#rateloader-{{i.id}}" hx-target="#transaction_block" hx-include="[name='payment']" id="star9" hx-post="{%url 'my-profile' %}" hx-trigger="change" name="rating" value="2" />
+                                                        <label for="star9" title="2 stars"><i class="fa fa-star"></i></label>
+                                                        <input type="radio" hx-swap="outerHTML" hx-indicator="#rateloader-{{i.id}}" hx-target="#transaction_block" hx-include="[name='payment']" hx-post="{%url 'my-profile' %}" hx-trigger="change" hx-target="none" id="star10" name="rating" value="1" />
+                                                        <label for="star10" title="1 star"><i class="fa fa-star"></i></label>
+                                                        <div class="w-100 h-100 justify-content-center align-items-center bg-white" id="rateloader-{{i.id}}" style="display:none;z-index: 9999;position: absolute;top: 10%;right: 25%;">
+                                                            <div class="spinner-border text-primary">
+                                                                <span class="visually-hidden"><i ></i></span>
+                                                            </div>
+                                                        </div>
+                                                </div>  
+                                                {%endif%}  
+                                                {%endwith%}    
+                                            </div>
+                                        </td>
+                                    </tr>
+                                
+                                    {%endfor%}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    
+        <!-- Mobile Card View -->
+        <div class="d-lg-none">
+            <div class="row g-3">
+                {%for i in items%}
+                    <div class="col-12">
+                        <div class="card shadow-sm border-0 transaction-card">
+                            <div class="card-body">
+                                <div class="row align-items-center">
+                                    <div class="col-3">                                       
+                                            <img src="/media/{{i.product.images.first.img}}" alt="{{i.product.name}}" class="img-fluid rounded transaction-mobile-image">
+                                    </div>
+                                    <div class="col-9">
+                                        <div class="d-flex justify-content-between align-items-start mb-2">
+                                            <div>
+                                                <a href="{%url 'product-detail' id=i.product.id %}"><h6 class="fw-bold mb-1" >{{i.product.name}}</h6></a>
+                                                <small class="text-muted" >{{i.product.catagory.first.name}}</small>
+                                            </div>
+                                            <span class="badge" >{{i.status}}</span>
+                                        </div>
+                                        <div class="row text-sm">
+                                            <div class="col-4">
+                                                <small class="text-muted d-block">Price</small>
+                                                <span class="fw-bold price-sale" >(ETB) <br/>{{i.product.price}}</span>
+                                            </div>
+                                            <div class="col-4">
+                                                <small class="text-muted d-block">Quantity</small>
+                                                <span class="text-success fw-semibold" >{{i.quantity}}</span>
+                                            </div>
+                                            <div class="col-4">
+                                                <small class="text-muted d-block">Date</small>
+                                                <span class="text-muted small" >{{i.date}}</span>
+                                            </div>
+                                        </div>
+                                            <div class="d-flex justify-content-end mt-3">
+                                                 {%with rated_or=i.product.rating.all|find_rated:request.user %}
+                                                {%if  rated_or.exists%}
+                                                <div class="d-flex justify-content-center align-items-center gap-1">
+                                                    <span><i class="fa fa-star text-warning"></i> ({{rated_or.first.rate}})</span>
+                                                </div>
+                                                {%else%}
+                                                <div class="position-relative d-flex gap-2 align-items-center">
+                                                    <div class="rating">
+                                                        <input type="hidden" name="payment" id="mobilepayment" value="{{i.id}}">
+                                                        <input type="radio" hx-include="#mobilepayment"  hx-post="{%url 'my-profile' %}" hx-indicator="#mobilerateloader-{{i.id}}" id="star5"  name="rating" value="5" hx-target="#transaction_block" />
+                                                        <label for="star5" title="5 stars"><i class="fa fa-star"></i></label>
+                                                        <input type="radio" hx-include="#mobilepayment" hx-post="{%url 'my-profile' %}" hx-indicator="#mobilerateloader-{{i.id}}"  id="star4" name="rating" value="4" hx-target="#transaction_block" />
+                                                        <label for="star4" title="4 stars"><i class="fa fa-star"></i></label>
+                                                        <input type="radio" hx-include="#mobilepayment" id="star3" hx-post="{%url 'my-profile' %}" hx-indicator="#mobilerateloader-{{i.id}}" name="rating" value="3" hx-target="#transaction_block" />
+                                                        <label for="star3" title="3 stars"><i class="fa fa-star"></i></label>
+                                                        <input type="radio" hx-include="#mobilepayment" id="star2" hx-post="{%url 'my-profile' %}" hx-indicator="#mobilerateloader-{{i.id}}"  name="rating" value="2" hx-target="#transaction_block" />
+                                                        <label for="star2" title="2 stars"><i class="fa fa-star"></i></label>
+                                                        <input type="radio" hx-include="#mobilepayment" hx-post="{%url 'my-profile' %}" hx-indicator="#mobilerateloader-{{i.id}}"  id="star1" name="rating" value="1" hx-target="#transaction_block" />
+                                                        <label for="star1" title="1 star"><i class="fa fa-star"></i></label>
+                                                    </div>
+                                                    <div class="w-100 justify-content-center position-absolute start-0 bg-white" style="display: none;" id="mobilerateloader-{{i.id}}" >
+                                                        <div class="spinner-border text-primary">
+                                                            <span class="visually-hidden"><i ></i></span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                {%endif%}  
+                                                {%endwith%}
+                                            </div>
+                                    
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+               {%endfor%}
+            </div>
+        </div>
+        <div id="clearLoader" style="display:none;width: 100%; height: 100%; position: absolute; top: 0; left: 0; background: rgba(255, 255, 255, 0.7); z-index: 9999;">
+            <div class="text-center my-3">
+                <div class="spinner-border text-primary" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+            </div>
+            
+        </div>
+    {%if items.count == 0 %}
+        <!-- Empty State -->
+        <div class="text-center py-5">
+            <i class="bi bi-inbox display-1 text-muted"></i>
+            <h5 class="text-muted mt-3">No transactions found</h5>
+            <p class="text-muted">Try adjusting your search or filter criteria</p>
+        </div>
+        {%endif%}
+    </div>
+        {%endblock%}
+    </div>
+</div>

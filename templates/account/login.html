@@ -1,0 +1,92 @@
+{% extends "allauth/layouts/base.html" %}
+{% load i18n %}
+{% load allauth account %}
+{% load socialaccount %}
+{% block head_title %}
+    {% trans "Sign In" %}
+{% endblock head_title %}
+
+
+{% block content %}
+<div class="d-flex justify-content-center pt-5 mb-3">
+    <p style="font-family:Verdana, Geneva, Tahoma, sans-serif;" class="border-bottom mb-2 display-6 text-tritiary">Log In</p>
+</div>
+    <div class="pt-2">
+        <div class="container">
+            <div  class="w-100 d-flex justify-content-center align-items-center">
+                <form style="width: 300px;" method="post" action="{%url 'account_login' %}">
+                    {% if redirect_field_value %}
+                    <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}" />
+                    {% endif %}
+                    {%if form.errors%}
+                    <p class="mb-2 small fw-bold text-danger">The username and/or password you specified are not correct</p>
+                    {%endif%}
+                    {% csrf_token %}
+
+                    <!-- Email input -->
+                    <div data-mdb-input-init class="form-outline mb-3 ">
+                      <div class="position-relative">
+                        <input type="tel" placeholder="09*********" name="login" id="form2Example1" class="text-dark form-control {%if form.errors%} border-danger {%endif%}" />
+                        {%if form.errors%}
+                        <div class="position-absolute end-0 bottom-0 translate-middle">
+                          <i class="text-danger bi bi-exclamation-circle "></i>
+                        </div>
+                        {%endif%}
+                      </div>
+                      <label class="form-label {%if form.errors%} text-danger {%endif%}" for="form2Example1">Phone</label>
+                    </div>
+                  
+                    <!-- Password input -->
+                    <div data-mdb-input-init class="form-outline mb-0" x-data="{show:false}">
+                      <div class="position-relative">
+                        <input placeholder="Password" name="password" x-bind:type="!show?'password':'text'" id="form2Example2" class="text-dark form-control {%if form.errors%} border-danger {%endif%}" />
+                        <div class="position-absolute end-0 bottom-0 translate-middle-x mb-1">
+                          <i x-show="!show" @click="show=!show" class="large bi bi-eye "></i>
+                          <i x-show="show" @click="show=!show" class="large bi bi-eye-slash "></i>
+
+                        </div>
+                      </div>
+                      <label class="form-label {%if form.errors%} text-danger {%endif%}" for="form2Example2">Password</label>
+                    </div>
+                  
+                    <!-- 2 column grid layout for inline styling -->
+                    
+                      <div class="col d-flex  justify-content-center">
+                      
+                      <div class="col mb-3 d-flex justify-content-end">
+                        <a href="{%url 'accounts_reset' %}">Forgot password?</a>
+                      </div>
+                    </div>
+                  
+                    <!-- Submit button -->
+                    <div class="d-flex">
+
+                      <button data-mdb-button-init data-mdb-ripple-init class="btn btn-primary btn-block mb-4">Sign in</button>
+                    </div>
+                  
+                    <!-- Register buttons -->
+                    <div class="text-center">
+                      <p>Not a member? <a href="{%url 'account_signup'%}">Register</a></p>
+                      <p>or sign up with:</p>
+                      <button  type="button" style="background-color: #0d6efd;" class="btn btn-success ">
+                        <i class="fab fs-5 fa-facebook ms-1 me-2"></i> <span class="me-2">Facebook</span> 
+                      </button>
+                      <a href="{% provider_login_url 'google' %}">
+                        <button  type="button"  class="btn btn-primary ">
+                          <i class="fab fs-5 fa-google ms-1 me-2"></i> <span class="me-2">Google</span> 
+                        </button>
+                      </a>
+                    </div>
+                  </form>
+                  
+            </div>
+        </div>
+    </div>
+    <style>
+      label{
+        color: rgb(43, 43, 43);
+      }
+    </style>
+{% endblock content %}
+{% block extra_body %}
+{% endblock %}

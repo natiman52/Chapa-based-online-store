@@ -1,0 +1,88 @@
+{% extends "account/base_entrance.html" %}
+{% load crispy_forms_tags %}
+{% load socialaccount %}
+
+{% block content %}
+<style>
+    label{
+        color:black;
+    }
+</style>
+    <div class="d-flex justify-content-center  pt-4 mb-2">
+        <div style="width: 350px;" class="d-flex">
+            <div class="d-flex align-items-center">
+                <a style="cursor: pointer;"  href="{%url 'home'%}">
+                    <i class="fs-3 text-dark bi bi-arrow-left"></i>
+                </a>
+                </div>
+            <div class="w-100 d-flex justify-content-center">
+                <p style="font-family:Verdana, Geneva, Tahoma, sans-serif;" class="border-bottom mb-2 display-6 text-secondary">Sign Up</p>
+            </div>
+        </div>
+    </div>
+    <div class="pt-2">
+        <div class="container">
+            <div class="w-100 d-flex justify-content-center align-items-center">
+                <form style="width: 350px;" class="form-group" action="{%url 'account_signup'%}" method="post">
+                    
+                    {%csrf_token%}
+                    <div class="mt-3 d-flex gap-2">
+                        <div style="flex: 1;">
+                            {{form.name | as_crispy_field}}
+                        </div>
+                        <div style="width: 100px;">
+                            {{form.age|as_crispy_field}}
+                        </div>
+                    </div>
+                    {{form.phone | as_crispy_field}}
+
+                    <div class="mt-3">
+                        {{form.location|as_crispy_field}}
+                    </div>
+                    <!-- password -->
+                    <div class="mt-3">
+                        {{form.password1.label_tag}}
+                        <div class="position-relative mb-3" x-data="{show:false}">
+                            <input  name="password1" x-bind:type="!show?'password':'text'" id="form2Example2" class="text-dark form-control {%if form.errors.password1%} border-1 border-danger {%endif%}" />
+                            <div class="position-absolute end-0 bottom-0 translate-middle-x mb-1">
+                                <i x-show="!show" @click="show=!show" class="h5 bi bi-eye "></i>
+                                <i x-show="show" @click="show=!show" class="h5 bi bi-eye-slash "></i>
+                              </div>
+                        </div>
+                    </div>
+                    {{form.password2.label_tag}}
+                    <div class="position-relative" x-data="{show:false}">
+                        <input name="password2" x-bind:type="!show?'password':'text'" id="form2Example2" class="text-dark form-control {%if form.errors.password2%} border-1 border-danger {%endif%}" />
+                        <div class="position-absolute end-0 bottom-0 translate-middle-x mb-1">
+                            <i x-show="!show" @click="show=!show" class="h5 bi bi-eye "></i>
+                            <i x-show="show" @click="show=!show" class="h5 bi bi-eye-slash "></i>
+                        </div>
+                    </div>
+                    {%if form.errors.password2%}
+                    <strong class="small text-danger">Passwords didn't match</strong>
+                    {%endif%}
+
+                <!--end password-->
+                    <div class="my-3 mt-4  d-flex justify-content-end">
+                        <button class="btn btn-primary">Sign Up</button>
+                    </div>
+
+                    <div class="text-center">
+                        <p>Do you have an account? <a href="{%url 'account_login'%}">Login</a></p>
+                        <p>or sign in with:</p>
+                        <button  type="button" style="background-color: #0d6efd;" class="btn btn-success ">
+                          <i class="fab fs-5 fa-facebook ms-1 me-2"></i> <span class="me-2">Facebook</span> 
+                        </button>
+                        <a href="{% provider_login_url 'google' %}">
+                            <button  type="button"  class="btn btn-primary ">
+                              <i class="fab fs-5 fa-google ms-1 me-2"></i> <span class="me-2">Google</span> 
+                            </button>
+                          </a>
+                      </div>
+                </form>
+            </div>
+        </div>
+        </div>
+ 
+        
+{% endblock content %}

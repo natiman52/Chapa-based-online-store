@@ -1,0 +1,68 @@
+<div class="main-content">
+    
+    <!-- Profile Header -->
+    <div class="profile-header">
+        <img src="/media/{{request.user.img}}" alt="Profile Picture" class="profile-avatar">
+        <div class="profile-name">
+            {{request.user.phone}} <i class="fas fa-check-circle verified-badge"></i>
+        </div>
+        <div class="profile-email">{{request.user.email}}</div>
+    </div>
+    
+    <!-- Two Column Layout -->
+    <div class="two-column">
+        <div>
+            <div class="section-card">
+                <div class="section-title">Personal details</div>
+                <div class="info-row">
+                    <div class="info-label">Full name:</div>
+                    <div class="info-value">{{request.user.name}}</div>
+                </div>
+                <div class="info-row">
+                    <div class="info-label">Age:</div>
+                    <div class="info-value">{{request.user.age}}</div>
+                </div>
+                <div class="info-row">
+                    <div class="info-label">Gender:</div>
+                    <div class="info-value">Male</div>
+                </div>
+                <div class="info-row">
+                    <div class="info-label">Nationality:</div>
+                    <div class="info-value link">Ethiopian</div>
+                </div>
+                <div class="info-row">
+                    <div class="info-label">Address:</div>
+                    <div class="info-value">{{request.user.location}}</div>
+                </div>
+                <div class="info-row">
+                    <div class="info-label">Phone Number:</div>
+                    <div class="info-value">{{request.user.phone}}</div>
+                </div>
+                <div class="info-row">
+                    <div class="info-label">Email:</div>
+                    <div class="info-value">{{request.user.email}}</div>
+                </div>
+            </div>
+            
+            <!-- Security Settings -->
+
+        </div>
+        
+        <!-- Right Column -->
+        <div>
+            <div class="section-card">
+                <div class="section-title">Account Details</div>
+                
+                <div class="info-row">
+                    <div class="info-label">Account Created:</div>
+                    <div class="info-value">{{request.user.created}}</div>
+                </div>
+                <div class="info-row">
+                    <div class="info-label">Last Login:</div>
+                    <div class="info-value">{{request.user.last_login}}</div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>

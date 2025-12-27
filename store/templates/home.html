@@ -1,0 +1,122 @@
+{%extends "allauth/layouts/base.html"%}
+{% load socialaccount %}
+
+{%block content%}
+
+
+
+
+    <!-- Topbar Start -->
+    
+    {%include 'utils/navbar.html' %}
+    <!-- Navbar & Hero End -->
+
+    <!-- Carousel Start -->
+    <div class="carousel bg-light px-0">
+        <div class="container">
+            <div class="row g-0 justify-content-end">
+                <div class="col-12 col-lg-12 col-xl-12">
+                    <div class="header-carousel owl-carousel bg-light py-5">
+                        {%for hero in heroes%}
+                        <div class="row g-0 header-carousel-item align-items-center">
+                            <div class="col-xl-6 carousel-img  Left" data-wow-delay="0.1s">
+                                <img src="/media/{{hero.img}}" class="img-fluid w-100" alt="Image">
+                            </div>
+                            <div class="col-xl-6 carousel-content p-4">
+                                <h4 class="text-uppercase fw-bold mb-4  Right text-danger" data-wow-delay="0.1s"
+                                    style="letter-spacing: 3px;">Save Up To {{hero.discount |floatformat }} ETB</h4>
+                                <h1 class="display-3 text-capitalize mb-4  Right text-secondary" data-wow-delay="0.3s">{{hero.txt}}</h1>
+                                <a class="btn btn-primary rounded-pill py-3 px-5  Right" data-wow-delay="0.7s"
+                                    href="{%url 'product-detail' id=hero.product.id %}">Shop Now</a>
+                            </div>
+                        </div>
+                        {%endfor%}
+                        
+                    </div>
+                </div>
+               
+            </div>
+        </div>
+    </div>
+    <!-- Carousel End -->
+
+
+    {%include "utils/store.html" %}
+
+
+
+    <!-- Products Offer Start -->
+    <div class="container-fluid bg-light py-5">
+        <div class="container">
+            <div class="row g-4">
+                {%for i in deals%}
+                <div class="col-lg-6 Left" data-wow-delay="0.2s">
+                    <a href="{%url 'product-detail' id=i.product.id %}" class="d-flex align-items-center justify-content-between border bg-white rounded p-4">
+                        <div>
+                            <p class="text-muted mb-3">{{i.txt}}</p>
+                            <h3 class="text-primary">{{i.product.name}}</h3>
+                            <h1 class="display-3 text-secondary mb-0">{{i.discount}} <span
+                                    class="text-primary fw-normal">Off</span></h1>
+                        </div>
+                    </a>
+                </div>
+                {%endfor%}
+            </div>
+        </div>
+    </div>
+    <!-- Products Offer End -->
+    <!-- Searvices Start -->
+    <div class="container-fluid px-0 ">
+        <div class="row g-0 justify-content-center">
+            <div class="col-6 col-md-4 col-lg-3 border-start border-end" data-wow-delay="0.1s">
+                <div class="p-4 py-5">
+                    <div class="d-flex align-items-center justify-content-center">
+                        <i class="fa fa-sync-alt fa-2x text-primary"></i>
+                        <div class="ms-4">
+                            <h6 class="text-uppercase mb-2">Free Return</h6>
+                            <p class="mb-0">3 days money back guarantee!</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-6 col-md-4 col-lg-3 border-end " data-wow-delay="0.2s">
+                <div class="p-4 py-5">
+                    <div class="d-flex align-items-center justify-content-center">
+                        <i class="fab fa-telegram-plane fa-2x text-primary"></i>
+                        <div class="ms-4">
+                            <h6 class="text-uppercase mb-2">Free Shipping</h6>
+                            <p class="mb-0">Free shipping on all order</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-6 col-md-4 col-lg-3 border-end  " data-wow-delay="0.3s">
+                <div class="p-4 py-5">
+                    <div class="d-flex align-items-center justify-content-center">
+                        <i class="fas fa-life-ring fa-2x text-primary"></i>
+                        <div class="ms-4">
+                            <h6 class="text-uppercase mb-2">Support 24/7</h6>
+                            <p class="mb-0">We support online 24 hrs a day</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+           
+            <div class="col-6 col-md-4 col-lg-3 border-end  " data-wow-delay="0.5s">
+                <div class="p-4 py-5">
+                    <div class="d-flex align-items-center justify-content-center">
+                        <i class="fas fa-lock fa-2x text-primary"></i>
+                        <div class="ms-4">
+                            <h6 class="text-uppercase mb-2">Secure Payment</h6>
+                            <p class="mb-0">We Value Your Security</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+        </div>
+    </div>
+{% include 'utils/footer.html' %}
+    
+
+{%endblock%}

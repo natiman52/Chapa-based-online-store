@@ -1,0 +1,36 @@
+{%extends 'allauth/layouts/base.html' %}
+{%block content%}
+<style>
+    p{
+        color: black;
+    }
+    span{
+        color: blue;
+        cursor: pointer;
+        text-decoration: underline;
+    }
+    .graycolor{
+        color: gray !important;
+    }
+</style>
+
+<div class="mt-5">
+    <div class="container w-100">
+        <div class="d-flex flex-column align-items-center">
+            <h1 class="text-center">SMS sent</h1>
+            <div @done="avalible=true" class="border rounded-sm p-2" x-data="{avalible:true}">
+                <p>Check your messages for a verification link </p>
+                <p x-show="avalible">if the message is not present <span @click="avalible = false" hx-target="body" hx-swap="outerHTML" hx-post="{%url 'accounts_resend' id=id %}" >Resend</span></p>
+                <p x-show="!avalible">if the message is not present <span class="graycolor">Resend</span></p>
+                <template x-if="!avalible">
+                    <div class="timer" id="verify-timer" x-data="timer(new Date().setMinutes(new Date().getMinutes() + 1),$el)" x-init="init();">
+                        <p x-text="time().minutes"></p>
+                        <p x-text="time().seconds"></p>
+                      </div>
+                </template>
+                  
+            </div>
+        </div>
+    </div>
+</div>
+{%endblock%}

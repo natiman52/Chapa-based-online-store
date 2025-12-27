@@ -1,0 +1,30 @@
+ {%extends 'allauth/layouts/base.html'%}
+ 
+ {%block head_title%}FAQ Questions List{%endblock%}
+
+ {%block content%}
+ {%include 'utils/navbar.html' %}
+ <div class="container my-5" >
+    <div>
+        <h1 class="">How can we help you ?</h1>
+    </div>
+    <div class="mt-4 mb-4">
+        <p class="fs-5">Questions asked by buyer and also answered by buyers. as you our dear coustmers want it. If you don't find the answer you are looking for just ask a question about the topic and another customer may give you the answer or support may answer it</p>
+    </div>
+     {% for question in questions %}
+         <div class="d-flex align-items-center my-3 gap-3 ">
+            <span class="rounded-circle border btn-square">{{forloop.counter}}</span>  
+            <a href="{% url 'faq:question_detail' question.slug %}">{{question.question}}</a>
+        </div>
+     {% endfor %}
+    
+     {% if can_add_question %}
+         <div class="d-flex justify-content-end my-4 ">
+            <button class="btn btn-success "> <a class="text-white" href="{% url 'faq:add_question' %}">Ask Question</a></button>
+         </div>
+     {% endif %}
+ </div>
+
+ {%include 'utils/footer.html' %}
+
+ {%endblock%}

@@ -1,0 +1,229 @@
+{% extends "Mcomponent/manager_base.html" %}
+{% load store %}
+{% block stuff %}
+<style>
+    .card-modern {
+        border: none;
+        border-radius: 12px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    .card-modern:hover {
+        box-shadow: 0 10px 15px rgba(0, 0, 0, 0.05);
+    }
+    .table-modern thead th {
+        border-bottom: 2px solid #f0f0f0;
+        color: #6c757d;
+        font-weight: 600;
+        text-transform: uppercase;
+        font-size: 0.85rem;
+        letter-spacing: 0.5px;
+        padding-top: 1rem;
+        padding-bottom: 1rem;
+    }
+    .table-modern tbody td {
+        vertical-align: middle;
+        padding-top: 1rem;
+        padding-bottom: 1rem;
+        border-bottom: 1px solid #f8f9fa;
+    }
+    .table-modern tbody tr:last-child td {
+        border-bottom: none;
+    }
+    .table-modern tbody tr:hover {
+        background-color: #fcfcfc;
+    }
+    .badge-modern {
+        padding: 0.5em 0.8em;
+        border-radius: 50rem;
+        font-weight: 500;
+        font-size: 0.75rem;
+    }
+    .badge-success-modern {
+        background-color: #d1e7dd;
+        color: #0f5132;
+    }
+    .badge-danger-modern {
+        background-color: #f8d7da;
+        color: #842029;
+    }
+    .badge-warning-modern {
+        background-color: #fff3cd;
+        color: #664d03;
+    }
+    .btn-icon {
+        width: 32px;
+        height: 32px;
+        padding: 0;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 8px;
+        transition: all 0.2s;
+    }
+    .btn-icon:hover {
+        transform: translateY(-2px);
+    }
+    .search-input-modern {
+        border-radius: 8px;
+        border: 1px solid #e0e0e0;
+        padding: 0.6rem 1rem;
+        background-color: #f8f9fa;
+    }
+    .search-input-modern:focus {
+        background-color: #fff;
+        border-color: #86b7fe;
+        box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.15);
+    }
+</style>
+
+<div class="container-fluid px-4 py-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h4 class="fw-bold text-dark mb-1">Orders</h4>
+            <p class="text-muted mb-0">Manage and track your orders</p>
+        </div>
+    </div>
+
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags }} alert-dismissible fade show shadow-sm rounded-3 border-0 mb-4" role="alert">
+                <div class="d-flex align-items-center">
+                    {% if message.tags == 'success' %}
+                        <i class="fas fa-check-circle me-2 fs-5"></i>
+                    {% elif message.tags == 'error' %}
+                        <i class="fas fa-exclamation-circle me-2 fs-5"></i>
+                    {% endif %}
+                    {{ message }}
+                </div>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        {% endfor %}
+    {% endif %}
+
+    <div class="card card-modern bg-white mb-4">
+        <div class="card-body p-4">
+            <form method="get" class="row g-3 align-items-end">
+                <div class="col-md-3">
+                    <label for="search" class="form-label text-muted small fw-bold text-uppercase">Search</label>
+                    <div class="input-group">
+                        <span class="input-group-text bg-light border-end-0 rounded-start-3 ps-3"><i class="fas fa-search text-muted"></i></span>
+                        <input type="text" class="form-control search-input-modern border-start-0 rounded-end-3" id="search" name="search" placeholder="Product or User" value="{{ request.GET.search }}">
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <label for="status" class="form-label text-muted small fw-bold text-uppercase">Status</label>
+                    <select class="form-select search-input-modern" id="status" name="status">
+                        <option value="pending" {% if request.GET.status == 'pending' %}selected{% endif %}>Pending</option>
+                        <option value="success" {% if request.GET.status == 'success' or not request.GET.status %}selected{% endif %}>Success</option>
+                        <option value="failed" {% if request.GET.status == 'failed' %}selected{% endif %}>Failed</option>
+                        <option value="all" {% if request.GET.status == 'all' %}selected{% endif %}>All Statuses</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <label for="date_from" class="form-label text-muted small fw-bold text-uppercase">From</label>
+                    <input type="date" class="form-control search-input-modern" id="date_from" name="date_from" value="{{ request.GET.date_from }}">
+                </div>
+                <div class="col-md-2">
+                    <label for="date_to" class="form-label text-muted small fw-bold text-uppercase">To</label>
+                    <input type="date" class="form-control search-input-modern" id="date_to" name="date_to" value="{{ request.GET.date_to }}">
+                </div>
+                <div class="col-md-2">
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn btn-primary w-100 rounded-3 fw-bold py-2">Filter</button>
+                        <a href="{% url 'orders' %}" class="btn btn-light w-100 rounded-3 fw-bold py-2 text-muted border">Clear</a>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="card card-modern bg-white">
+        <div class="card-body p-0">
+            {% if orders %}
+            <div class="table-responsive">
+                <table class="table table-modern mb-0">
+                    <thead class="bg-light">
+                        <tr>
+                            <th scope="col" class="ps-4">Product</th>
+                            <th scope="col">User</th>
+                            <th scope="col">Quantity</th>
+                            <th scope="col">Total Price</th>
+                            <th scope="col">Date</th>
+                            <th scope="col">Status</th>
+                            <th scope="col">Location</th>
+                            <th scope="col" class="text-end pe-4">Delivery</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for order in orders %}
+                        <tr>
+                            <td class="ps-4">
+                                <div class="d-flex align-items-center">
+                                    {% if order.product.images.first %}
+                                    <img src="{{ order.product.images.first.img.url }}" alt="{{ order.product.name }}" class="rounded-3 me-3 shadow-sm" style="width: 48px; height: 48px; object-fit: cover;">
+                                    {% else %}
+                                    <div class="rounded-3 me-3 bg-light d-flex align-items-center justify-content-center shadow-sm" style="width: 48px; height: 48px;">
+                                        <i class="fas fa-box text-secondary"></i>
+                                    </div>
+                                    {% endif %}
+                                    <div>
+                                        <span class="fw-bold text-dark d-block">{{ order.product.name }}</span>
+                                        <small class="text-muted">ID: #{{ order.id }}</small>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    <div class="rounded-circle bg-light d-flex align-items-center justify-content-center me-2" style="width: 32px; height: 32px;">
+                                        <span class="fw-bold text-primary small">{{ order.user.name|slice:":2"|upper }}</span>
+                                    </div>
+                                    <span class="text-dark mt-1">{{ order.user.name }}</span>
+                                </div>
+                            </td>
+                            <td><span class="fw-bold">{{ order.quantity }}</span></td>
+                            <td><span class="fw-bold text-success">{{ order.quantity|mul:order.product.price }} ETB</span></td>
+                            <td class="text-muted">{{ order.date|date:"M d, Y" }}</td>
+                            <td>
+                                {% if order.status == 'success' %}
+                                    <span class="badge badge-modern badge-success-modern"><i class="fas fa-check-circle me-1"></i> Success</span>
+                                {% elif order.status == 'failed' %}
+                                    <span class="badge badge-modern badge-danger-modern"><i class="fas fa-times-circle me-1"></i> Failed</span>
+                                {% else %}
+                                    <span class="badge badge-modern badge-warning-modern"><i class="fas fa-clock me-1"></i> Pending</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    <i class="fas fa-map-marker-alt text-muted me-2"></i>
+                                    <span class="text-dark">{{ order.user.location|default:"Not specified" }}</span>
+                                </div>
+                            </td>
+                            <td class="text-end pe-4">
+                                {% if order.delivery_on %}
+                                    <span class="badge badge-modern badge-success-modern"><i class="fas fa-truck me-1"></i> Yes</span>
+                                {% else %}
+                                    <span class="badge badge-modern" style="background-color: #e9ecef; color: #6c757d;"><i class="fas fa-times me-1"></i> No</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div class="text-center py-5">
+                <div class="mb-3">
+                    <div class="bg-light rounded-circle d-inline-flex align-items-center justify-content-center" style="width: 80px; height: 80px;">
+                        <i class="fas fa-search text-muted fs-1"></i>
+                    </div>
+                </div>
+                <h5 class="text-dark fw-bold">No orders found</h5>
+                <p class="text-muted">Try adjusting your filters or search criteria.</p>
+                <a href="{% url 'orders' %}" class="btn btn-outline-primary rounded-pill px-4">Clear Filters</a>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

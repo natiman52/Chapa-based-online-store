@@ -1,0 +1,286 @@
+{%load store %}
+<style>
+    .phone-filterdown{
+        position: absolute;
+        box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        z-index: 1000;
+        left: 0;
+        background-color: white;
+        z-index: 100;
+        border-radius: 5px;
+        width: 100%;
+    }
+    /* Custom Range Slider Styling */
+    .custom-range {
+        -webkit-appearance: none;
+        width: 100%;
+        height: 6px;
+        background: #e9ecef;
+        border-radius: 5px;
+        outline: none;
+        opacity: 0.7;
+        -webkit-transition: .2s;
+        transition: opacity .2s;
+        background-image: linear-gradient(#0d6efd, #0d6efd);
+        background-repeat: no-repeat;
+    }
+
+    .custom-range:hover {
+        opacity: 1;
+    }
+
+    .custom-range::-webkit-slider-thumb {
+        -webkit-appearance: none;
+        appearance: none;
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        background: #0d6efd;
+        cursor: pointer;
+        box-shadow: 0 0 5px rgba(0,0,0,0.2);
+        border: 2px solid #fff;
+    }
+
+    .custom-range::-moz-range-thumb {
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        background: #0d6efd;
+        cursor: pointer;
+        box-shadow: 0 0 5px rgba(0,0,0,0.2);
+        border: 2px solid #fff;
+    }
+</style>
+<div class="container-fluid shop py-5">
+    <div class="container py-4 ">
+        <div class="row g-4">
+            <div class="col-lg-3 d-none d-lg-block">
+                {%include 'component/filter.html' %}
+            </div>
+            <div class="col-lg-9 ">
+                <div class="tab-content">
+                    <div  class="fade show p-0 active">
+                        <div class="position-relative d-flex align-items-center justify-content-end mb-4">
+                            <div x-data="{'show':false}" class="d-block d-lg-none ">
+                                <div class="d-flex gap-2">
+                                    <button @click="show = !show"  class="btn btn-primary dropdown-toggle">Filter </button>
+                                    {% if request.GET.sort or request.GET.price or request.GET.search %}
+                                    <a href="{{ request.path }}" class="btn btn-outline-danger rounded-pill">Clear</a>
+                                    {% endif %}
+                                </div>
+                            <div x-show="show" class="phone-filterdown mt-3 p-4">
+                                    <form action="" x-data="{changed:false, value: Number(`{{request.GET.price_range|default:0}}`) || 0, max: 50000}" class="price mb-2 p-0">
+                                        <h4 class="mb-3">Filter by Price</h4>
+                                        {%if request.GET.sort%}
+                                        <input type="hidden" name="sort" value="{{request.GET.sort}}">
+                                        {%endif%}
+                                       {%if request.GET.search%}
+                                        <input type="hidden" name="search" value="{{request.GET.search}}">
+                                        {%endif%}
+                                        {%if request.GET.page%}
+                                        <input type="hidden" name="page" value="{{request.GET.page}}">
+                                        {%endif%}
+                                        <input type="hidden">
+                                        
+                                        <div class="mb-3">
+                                            <label for="price-mobile" class="form-label d-flex justify-content-between align-items-center">
+                                                <span>0 ETB</span>
+                                                <div class="d-flex align-items-center gap-2">
+                                                    <input type="number" 
+                                                           class="form-control form-control-sm text-primary fw-bold" 
+                                                           style="width: 100px;"
+                                                           min="0" 
+                                                           :max="max"
+                                                           x-model="value" 
+                                                           @change="changed=true"
+                                                           @input="if(value > max) value = max; if(value < 0) value = 0;"
+                                                           >
+                                                    <span>ETB</span>
+                                                </div>
+                                            </label>
+                                            <input type="range" 
+                                                   @change="changed=true" 
+                                                   @input="value = $el.value"
+                                                   class="custom-range" 
+                                                   id="price-mobile" 
+                                                   name="price_range" 
+                                                   min="0" 
+                                                   :max="max"
+                                                   x-model="value"
+                                                   :style="`background-size: ${(value / max) * 100}% 100%`" />
+                                        </div>
+
+                                        <template x-if="changed">
+                                            <div class="d-flex mt-3 justify-content-end">
+                                                <button class="btn btn-primary rounded-pill px-4">Apply Filter</button>
+                                            </div>
+                                        </template>
+                                    </form>
+                                    <div>
+                                        <h4 class="mb-2">Sort By <i class="btn btn-secondary p-1 bi bi-arrow-down-up"></i></h4>
+                                        <div class="d-flex gap-2 flex-wrap">
+                                            <a class="border rounded-pill p-2 border-black" href="?sort=newest&{{request | get_sort}}">Newest</a>
+                                            <a class="border rounded-pill p-2 border-black" href="?sort=oldest{{request | get_sort}}">Oldest</a>
+                                            <a class="border rounded-pill p-2 border-black" href="?sort=price_desc{{request | get_sort}}">Price <i class="bi bi-arrow-down-short"></i> </a>
+                                            <a class="border rounded-pill p-2 border-black" href="?sort=price_asc{{request | get_sort}}">Price: <i class="bi bi-arrow-up-short"></i></a>
+                                        </div>
+                                    </div>
+                                    {% if request.GET.sort or request.GET.price or request.GET.search %}
+                                    <div class="mt-3">
+                                        <a href="{{ request.path }}" class="btn btn-sm btn-outline-danger rounded-pill w-100">Clear Filters</a>
+                                    </div>
+                                    {% endif %}
+                                    </div>
+                            </div>
+                           
+                        </div>
+                        </div>
+                        <div class="row g-4 ">
+                            {%if items.paginator.count == 0 %}
+                            <div class="col-12">
+                                <div style="color: black;" class="fs-5 d-flex justify-content-center flex-column align-items-center">
+                                    <i class="fs-4  mb-3 fa fa-shopping-bag"></i>
+                                    Unfortunately, we did not find anything that matches these criteria
+                                </div>
+                            </div>
+                            {%endif%}
+                            {%for item in items%}
+                            <div class="d-none d-lg-block col-lg-3">
+                                <div class="rounded" >                              
+                                        <div  class="border rounded">
+                                            <div style="height: 250px;" class="product-item-inner-item pb-3 ">
+                                                <img src="/media/{{item.images.all.first.img}}" class="img-fluid h-100 w-100 rounded-top" alt="">
+                                            </div>
+                                            <div class="d-flex align-items-center flex-column">
+                                                <a href="{%url 'product-detail' id=item.id %}">
+                                                    <p class="fs-4 mb-1 text-center text-primary text-capitalize">{{item.name | checklength}}</p>
+                                                </a>
+                                                <p class="fs-5 price-sale">ETB {{item.price}}</p>
+                                            </div>
+                                                <div class="d-flex justify-content-center">
+                                                    <a href="{%url 'checkout'%}?items={{item.id}}-1,">
+                                                        <button style="width: 100px;" class="rounded-pill border-none btn btn-primary" >Buy</button>
+                                                    </a>
+                                                </div>
+                                                <div class="d-flex px-3 pt-4 pb-3 justify-content-between align-items-center">
+                                                    <div class="d-flex align-items-center">
+                                                        {%with ratings=item.rating.all|get_total_star:item.rating.all.count%}
+                                                        {%for i in ratings|get_range%}
+                                                        <i class="bi bi-star-fill bg-golden"></i>
+                                                        {%endfor%}
+                                                        {%if ratings == 0 %}
+                                                        <i class="bi bi-star bg-golden"></i>
+                                                        {%endif%}
+                                                        <p class="ms-1 my-0">({{ratings}})</p>
+                                                        {%endwith%}
+                                                    </div>
+                                                    {%if user.is_authenticated%}
+                                                    {%with test=item|find_if_exists:request.user.carts.all%}
+                                                    <div class="position-relative" x-data="{%if test %}{show:false}{%else%}{show:true}{%endif%}">
+                                                        <input type="hidden" value="{{item.id}}" name="id" id="item-{{item.id}}">
+                                                        <div x-show="show"  x-on:htmx:after-request="show = false" hx-indicator="#spinner-replace-{{item.id}}"  hx-post="{%url 'add-cart'%}" hx-include="#item-{{item.id}}" hx-target="#cart-container" hx-swap="outerHTML" class="rounded-circle border btn-sm-square">
+                                                            <i class="text-primary bi bi-bag-plus-fill"></i>
+                                                        </div>
+                                                        <div x-show="!show" x-on:htmx:after-request="show = true" hx-indicator="#spinner-replace-{{item.id}}"  hx-post="{%url 'remove-cart'%}" hx-include="#item-{{item.id}}" hx-target="#cart-container" hx-swap="outerHTML" class=" rounded-circle border btn-sm-square">
+                                                            <i class="text-success bi bi-bag-check-fill"></i>
+                                                        </div>
+                                                        <div id="spinner-replace-{{item.id}}" class="spinner-replace position-absolute top-50 start-50 translate-middle bg-white">
+                                                            <div class="spin-animate">
+                                                                <i class=" bi bi-arrow-repeat"></i>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    {%endwith%}
+                                                    {%else%}
+                                                    {%endif%}
+                                                </div>
+                                        </div>
+                                    
+                                </div>
+                            </div>
+                            <!-- FINISH PHONE VERSION OF STORE -->
+                            <div class="col-6 d-lg-none">
+                                <div class="rounded border h-100 d-flex flex-column">
+                                    <div style="height: 150px;" class="position-relative">
+                                        <img src="/media/{{item.images.all.first.img}}" class="img-fluid h-100 w-100 rounded-top object-fit-cover" alt="{{item.name}}">
+                                        <div class="position-absolute top-0 start-0 m-2">
+                                            <span class="badge bg-primary">{{item.catagory.first.name}}</span>
+                                        </div>
+                                    </div>
+                                    <div class="p-2 d-flex flex-column flex-grow-1">
+                                        <a href="{%url 'product-detail' id=item.id %}" class="text-decoration-none">
+                                            <h6 class="text-primary text-capitalize mb-1 text-truncate">{{item.name}}</h6>
+                                        </a>
+                                        <div class="d-flex align-items-center mb-2">
+                                            {%with ratings=item.rating.all|get_total_star:item.rating.all.count%}
+                                            {%if ratings > 0 %}
+                                            <i class="bi bi-star-fill text-warning small me-1"></i>
+                                            <small class="text-muted">({{ratings}})</small>
+                                            {%else%}
+                                            <i class="bi bi-star text-warning small"></i>
+                                            {%endif%}
+                                            {%endwith%}
+                                        </div>
+                                        <h6 class="text-danger mb-2">ETB {{item.price}}</h6>
+                                        
+                                        <div class="mt-auto d-flex justify-content-between align-items-center">
+                                            <a href="{%url 'checkout'%}?items={{item.id}}-1," class="btn btn-sm btn-primary rounded-pill px-3">Buy</a>
+                                            
+                                            {%if user.is_authenticated%}
+                                            {%with test=item|find_if_exists:request.user.carts.all%}
+                                            <div class="position-relative" x-data="{%if test %}{show:false}{%else%}{show:true}{%endif%}">
+                                                <input type="hidden" value="{{item.id}}" name="id" id="item-mobile-{{item.id}}">
+                                                <div x-show="show"  x-on:htmx:after-request="show = false" hx-indicator="#spinner-mobile-{{item.id}}"  hx-post="{%url 'add-cart'%}" hx-include="#item-mobile-{{item.id}}" hx-target="#cart-container" hx-swap="outerHTML" class="btn btn-sm btn-outline-primary rounded-circle border-0">
+                                                    <i class="bi bi-bag-plus-fill"></i>
+                                                </div>
+                                                <div x-show="!show" x-on:htmx:after-request="show = true" hx-indicator="#spinner-mobile-{{item.id}}"  hx-post="{%url 'remove-cart'%}" hx-include="#item-mobile-{{item.id}}" hx-target="#cart-container" hx-swap="outerHTML" class="btn btn-sm btn-outline-success rounded-circle border-0">
+                                                    <i class="bi bi-bag-check-fill"></i>
+                                                </div>
+                                                <div id="spinner-mobile-{{item.id}}" class="spinner-replace position-absolute top-50 start-50 translate-middle bg-white" style="display:none;">
+                                                    <div class="spinner-border spinner-border-sm text-primary" role="status">
+                                                        <span class="visually-hidden">Loading...</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            {%endwith%}
+                                            {%else%}
+                                            <a href="{%url 'account_login'%}" class="btn btn-sm btn-outline-primary rounded-circle border-0">
+                                                <i class="bi bi-bag-plus-fill"></i>
+                                            </a>
+                                            {%endif%}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            {%endfor%}
+                        </div>
+                        {%if items.has_other_pages and request.resolver_match.url_name != 'home' %}
+                        <!-- Pagination Start -->
+                        <div class="col-12">
+                            <div class="pagination d-flex justify-content-center mt-5">
+                                {% if items.has_previous %}
+                                <a href="?page={{ items.previous_page_number }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}{% if request.GET.price %}&price={{ request.GET.price }}{% endif %}{% if request.GET.sort %}&sort={{ request.GET.sort }}{% endif %}" class="rounded">&laquo;</a>
+                                {% endif %}
+
+                                {% for i in items.paginator.page_range %}
+                                    {% if items.number == i %}
+                                    <a href="#" class="active rounded">{{ i }}</a>
+                                    {% elif i > items.number|add:'-3' and i < items.number|add:'3' %}
+                                    <a href="?page={{ i }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}{% if request.GET.price %}&price={{ request.GET.price }}{% endif %}{% if request.GET.sort %}&sort={{ request.GET.sort }}{% endif %}" class="rounded">{{ i }}</a>
+                                    {% endif %}
+                                {% endfor %}
+
+                                {% if items.has_next %}
+                                <a href="?page={{ items.next_page_number }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}{% if request.GET.price %}&price={{ request.GET.price }}{% endif %}{% if request.GET.sort %}&sort={{ request.GET.sort }}{% endif %}" class="rounded">&raquo;</a>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <!-- Pagination End -->
+                        {%endif%}
+                    </div>
+                    
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

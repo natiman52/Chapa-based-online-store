@@ -1,0 +1,81 @@
+{%extends 'allauth/layouts/base.html'%}
+{%block content%}
+{%include 'utils/navbar.html' %}
+
+<div class="container-fluid">
+    <div class="container my-5">
+        <h1 class="mb-5 pb-2 border-bottom" >About Us</h1>
+        <div class="mt-4">
+            <p class="text-dark">
+                Welcome to <i>SellEverything.com</i>, your trusted online destination for high-quality industrial tools and equipment. We specialize in providing a comprehensive range of products designed to meet the needs of professionals in various industries, including manufacturing, construction, automotive, and more.
+        We understand that in the world of manufacturing, construction, and heavy industry, downtime is not an option. We are not just an online catalog; we are a dedicated supply partner committed to ensuring your operations run smoothly, efficiently, and without interruption.
+            </p>
+        </div>
+        <div class="mt-5 text-dark">
+            <h3 class="mb-4">Our Mission</h3>
+           <p>
+            Our mission is simple: to provide engineers, maintenance teams, and procurement managers with instant, reliable access to the highest quality machinery components. We bridge the gap between complex industrial needs and seamless procurement, specializing in everything that keeps your machines moving.
+           </p>
+           <p>We curate a focused inventory of critical components, ensuring every product meets rigorous quality standards. Our catalog includes:</p>
+            <ul>
+                <li>Precision Bearings & Gaskets: For smooth operation and secure sealing.</li>
+                <li>Hydraulic & Pneumatic Systems: Valves, actuators, and pumps for robust power transmission.</li>
+                <li>Electric Motors & Gearboxes: Reliable power solutions for every application.</li>
+                <li>Custom and Hard-to-Find Parts: A dedicated sourcing team to track down specialized components that stop production dead in its tracks.</li>
+                <li>We partner only with certified, reputable manufacturers, guaranteeing that the components you install are authentic, reliable, and built to last.</li>
+            </ul>
+        </div>
+        <div class="mt-5 text-dark">
+            <h3 class="mb-4">Why Choose Us?</h3>
+            <ul class="mb-5">
+                <li><strong>Expertise:</strong> Our team has deep industry knowledge, ensuring you get the right parts for your specific needs.</li>
+                <li><strong>Quality Assurance:</strong> We rigorously vet our suppliers and products to ensure you receive only the best.</li>
+                <li><strong>Fast Shipping:</strong> We understand the urgency of industrial operations and offer expedited shipping options to minimize downtime.</li>
+                <li><strong>Customer Support:</strong> Our knowledgeable support team is available to assist with product selection, technical questions, and after-sales service.</li>
+                <li><strong>Competitive Pricing:</strong> We leverage strong supplier relationships to offer competitive pricing without compromising on quality.</li>
+            </ul>
+            <p class="fw-bold">
+                At <i>SellEverything.com</i>, we are more than just a supplier; we are a partner in your success. Whether you're looking for standard components or hard-to-find parts, we are here to help you keep your operations running smoothly. Explore our extensive catalog today and experience the difference of working with a dedicated industrial supply partner.
+            </p>
+
+        </div>
+        
+    </div>
+</div>
+<div class="container">
+    <div class="row">
+        <div class="col-12 col-md-6 col-lg-6">
+            <p class="mb-4 h2 text-primary border-bottom">Featured Products</p>
+
+        {%for i in products%}
+        <div class="d-flex">
+            <div style="width: 100px;height: 100px;" class="me-3">
+                <img class="img-fluid rounded" src="media/{{i.images.first.img}}" alt="">
+            </div>
+            <div class="">
+                <a href="{%url 'product-detail' id=i.id %}"><p class="lead text-primary mb-2">{{i.name}}</p></a> 
+                <p class=" text-danger">ETB {{i.price}}</p>
+            </div>
+        </div>
+        {%endfor%}
+        </div>
+        <div class="d-none d-md-block col-md-6 col-lg-6">
+            <p class="mb-4 h2 text-primary border-bottom">Popular Products</p>
+           
+            {%for i in popular%}
+            <div class="d-flex mb-4">
+                <div style="width: 100px;height: 100px;" class="me-3">
+                <img class="img-fluid rounded" src="media/{{i.images.first.img}}" alt="">
+                </div>
+            <div class="">
+               <a href="{%url 'product-detail' id=i.id %}"><p class="lead text-primary mb-2">{{i.name}}</p></a> 
+                <p class=" text-danger">ETB {{i.price}}</p>
+            </div>
+        </div>
+            {%endfor%}
+        </div>
+    </div>
+
+</div>
+{% include 'utils/footer.html' %}   
+{%endblock%}

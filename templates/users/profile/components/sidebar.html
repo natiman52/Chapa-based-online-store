@@ -1,0 +1,74 @@
+
+    <div  class="sidebar bg-nav " id="sidebar">
+        <div class="sidebar-nav">
+            <div class="">
+                <div class="sidebar-section-title">My Account</div>
+                
+                <a href="{%url 'my-profile'%}" class="sidebar-item {%if request.resolver_match.url_name == 'my-profile' %}active{%endif%}">
+                    <i class="fas fa-bell"></i>
+                    Transactions
+                </a>
+                <a href="{%url 'profile-detail'%}" class="sidebar-item {%if request.resolver_match.url_name == 'profile-detail' %}active{%endif%}">
+                    <i class="fas fa-user"></i>
+                    Profile
+                </a>
+                <a href="{%url 'my-deliveries'%}" class="sidebar-item {%if request.resolver_match.url_name == 'my-deliveries' %}active{%endif%}">
+                    <i class="fas fa-truck"></i>
+                    Deliveries
+                </a>
+                <a href="{%url 'unpaid-bills'%}" class="sidebar-item {%if request.resolver_match.url_name == 'unpaid-bills' %}active{%endif%}">
+                    <i class="fas fa-file-invoice-dollar"></i>
+                    Unpaid Bills
+                </a>
+                
+                <a href="{%url 'profile-update' %}" class="sidebar-item {%if request.resolver_match.url_name == 'profile-update' %}active{%endif%}">
+                    <i class=" bi-pencil"></i>
+                    Edit Profile
+                </a>
+            </div>
+            <div class="sidebar-section sidebar-section-title">Settings</div>
+            <a href="{%url 'acc_logout'%}" class="sidebar-item text-danger">
+                <i class="fas fa-plug"></i>
+                Logout
+            </a>
+            
+            
+            <div class="sidebar-overlay" id="sidebarOverlay"></div>
+        </div>
+    </div>
+
+    <script>
+        // Mobile menu functionality
+        const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+        const sidebar = document.getElementById('sidebar');
+        
+        function toggleSidebar() {
+            sidebar.classList.toggle('show');
+        
+        }
+        
+        function closeSidebar() {
+            sidebar.classList.remove('show');
+            
+        }
+        
+        mobileMenuBtn.addEventListener('click', toggleSidebar);
+        
+        
+        // Close sidebar when clicking on a sidebar item on mobile
+        const sidebarItems = document.querySelectorAll('.sidebar-item');
+        sidebarItems.forEach(item => {
+            item.addEventListener('click', () => {
+                if (window.innerWidth <= 768) {
+                    closeSidebar();
+                }
+            });
+        });
+        
+        // Handle window resize
+        window.addEventListener('resize', () => {
+            if (window.innerWidth > 768) {
+                closeSidebar();
+            }
+        });
+    </script>

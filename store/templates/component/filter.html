@@ -1,0 +1,105 @@
+{%load store %}
+    {% if request.GET.sort or request.GET.price_range or request.GET.search  %}
+    <div class="my-3">
+        <a href="{{ request.path }}" class="btn btn-sm btn-outline-danger rounded-pill w-100">Clear Filters</a>
+    </div>
+    {% endif %}
+<div class="mb-4">
+    <h5 class="mb-3">Sort By</h5>
+    <div class="d-flex flex-wrap gap-2">
+        <a href="?sort=newest{{request|get_sort}}" class="btn btn-sm rounded-pill {% if request.GET.sort == 'newest' %}btn-primary{% else %}btn-outline-secondary{% endif %}">Newest</a>
+        <a href="?sort=oldest{{request|get_sort}}" class="btn btn-sm rounded-pill {% if request.GET.sort == 'oldest' %}btn-primary{% else %}btn-outline-secondary{% endif %}">Oldest</a>
+        <a href="?sort=price_desc{{request|get_sort}}" class="btn btn-sm rounded-pill {% if request.GET.sort == 'price_desc' %}btn-primary{% else %}btn-outline-secondary{% endif %}">Price: High to Low</a>
+        <a href="?sort=price_asc{{request|get_sort}}" class="btn btn-sm rounded-pill {% if request.GET.sort == 'price_asc' %}btn-primary{% else %}btn-outline-secondary{% endif %}">Price: Low to High</a>
+    </div>
+    </div>
+
+ <form action="" x-data="{changed:false, value: Number(`{{request.GET.price_range|default:0}}`) || 0, max: 50000}" class="price mb-4">
+                    <h5 class="mb-3">Price</h5>
+                    {%if request.GET.sort%}
+                    <input type="hidden" name="sort" value="{{request.GET.sort}}">
+                    {%endif%}
+                    {%if request.GET.search%}
+                    <input type="hidden" name="search" value="{{request.GET.search}}">
+                    {%endif%}
+                    {%if request.GET.page%}
+                    <input type="hidden" name="page" value="{{request.GET.page}}">
+                    {%endif%}
+                    
+                    <div class="mb-3">
+                        <label for="price-desktop" class="form-label d-flex justify-content-between align-items-center">
+                            <span>0 ETB</span>
+                            <div class="d-flex align-items-center gap-2">
+                                <input type="number" 
+                                       class="form-control form-control-sm text-primary fw-bold" 
+                                       style="width: 100px;"
+                                       min="0" 
+                                       :max="max"
+                                       x-model="value" 
+                                       @change="changed=true"
+                                       @input="if(value > max) value = max; if(value < 0) value = 0;"
+                                       >
+                                <span>ETB</span>
+                            </div>
+                        </label>
+                        <input type="range" 
+                               @change="changed=true" 
+                               @input="value = $el.value"
+                               class="custom-range w-100" 
+                               id="price-desktop" 
+                               name="price_range" 
+                               min="0" 
+                               :max="max"
+                               x-model="value"
+                               :style="`background-size: ${(value / max) * 100}% 100%;`" />
+                    </div>
+
+                    <template x-if="changed">
+                        <div class="d-flex mt-3 justify-content-end">
+                            <button class="btn btn-primary rounded-pill px-4">Apply Filter</button>
+                        </div>
+                    </template>
+                </form>
+<div class="product-categories mb-4">
+                    <h5>Categories</h5>
+                    <ul class="list-unstyled">
+                        {%for catagory in catagories%}
+                        <li>
+                            <div class="categories-item">
+                                <a href="{%url 'catagory' catagory=catagory.name %}" class="text-dark">
+                                    {{catagory.name}}</a>
+                                    <span>({{catagory.catagory.all.count}})</span>
+                            </div>
+                        </li>
+                        {%endfor%}
+                    </ul>
+                </div>
+               
+
+                <div class="featured-product mb-4">
+                    <h4 class="mb-3">Featured products</h4>
+                    {%for item in hot%}
+                    <div class="featured-product-item">
+                        <div class="rounded me-4" style="width: 100px; height: 100px;">
+                            <img src="/media/{{item.images.first.img}}" class="img-fluid rounded" alt="Image">
+                        </div>
+                        <div>
+                            <a href="{%url 'product-detail' id=item.id%}" class="h6 mb-2">{{item.name}}</a>
+                          <div class="d-flex align-items-center">
+                                {%with ratings=item.rating.all|get_total_star:item.rating.all.count%}
+                                {%for i in ratings|get_range%}
+                                <i class="bi bi-star-fill bg-golden"></i>
+                                {%endfor%}
+                                {%if ratings == 0 %}
+                                <i class="bi bi-star bg-golden"></i>
+                                {%endif%}
+                                <p class="ms-1 my-0">({{ratings}})</p>
+                                {%endwith%}
+                            </div>
+                            <div class="d-flex mb-2">
+                                <h5 class="text-danger ">ETB {{item.price}}</h5>
+                            </div>
+                        </div>
+                    </div>
+                   {%endfor%}
+                </div>

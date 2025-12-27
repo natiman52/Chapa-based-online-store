@@ -1,0 +1,14 @@
+{%extends 'allauth/layouts/base.html'%}
+{%block content%}
+
+    {% include 'users/profile/components/mandatory.html'%}
+   
+    <!-- Sidebar -->
+    
+    {%include 'users/profile/components/sidebar.html' %}
+    <!-- Main Content -->
+    {%include 'users/profile/components/deliveries_list.html'%}
+
+
+
+{%endblock%}
