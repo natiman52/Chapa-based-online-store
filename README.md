@@ -38,14 +38,21 @@
 *   **Dependencies**: Managed via `uv` / `pip` (see `pyproject.toml`)
 
 ## ENV requirments
-publickey
-secretkey
-SECRET_KEY
-DEBUG
-DB_NAME
-DB_USER
-DB_PASSWORD
-DB_HOST
-DB_PORT
-GOOGLE_CLIENT_ID
-GOOGLE_SECRET
+
+### for Chapa pay
+* publickey 
+* secretkey 
+
+## Django specfic Setting
+
+* SECRET_KEY 
+* DEBUG 
+* DB_NAME
+* DB_USER
+* DB_PASSWORD
+* DB_HOST
+* DB_PORT
+
+### for google Auth
+* GOOGLE_CLIENT_ID 
+* GOOGLE_SECRET
