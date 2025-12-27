@@ -1,4 +1,4 @@
-<h1 style="color:red">Engeza</h1>
+## <span style="color:red;">Engza</span>
 
 **Engza** is a Django-based e-commerce platform designed to facilitate online product sales, featuring specific integrations for the Ethiopian market.
 
