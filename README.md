@@ -39,11 +39,11 @@
 
 ## ENV requirments
 
-### for Chapa pay
+### For Chapa Pay
 * publickey 
 * secretkey 
 
-## Django specfic Setting
+### Django specfic Settings
 
 * SECRET_KEY 
 * DEBUG 
@@ -53,6 +53,6 @@
 * DB_HOST
 * DB_PORT
 
-### for google Auth
+### For Google Auth
 * GOOGLE_CLIENT_ID 
 * GOOGLE_SECRET
